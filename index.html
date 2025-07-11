@@ -1,1 +1,184 @@
-f
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>SHADOW | Édition Film</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at center, #0d0d0d 0%, #111 100%);
+      color: #fff;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .intro {
+      text-align: center;
+      padding: 5vw 4vw 2vw;
+      animation: fadeIntro 1s ease-in-out forwards;
+    }
+
+    .film-title {
+      font-size: clamp(1.8em, 4vw, 3em);
+      text-transform: uppercase;
+      color: #00ffe1;
+      animation: glowText 2s infinite alternate;
+    }
+
+    .film-title1 {
+      font-size: clamp(1.8em, 4vw, 3em);
+      text-transform: uppercase;
+      color: #ff0000;
+      animation: glowText 2s infinite alternate;
+    }
+
+    .release-date {
+      margin-top: 0.5em;
+      font-size: clamp(1em, 2vw, 1.2em);
+      opacity: 0.6;
+    }
+
+    .video-container {
+      width: 85%;
+      max-width: 800px;
+      margin: 30px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffe1;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .countdown {
+      text-align: center;
+      font-size: clamp(0.8em, 2vw, 1em);
+      margin: 20px 0;
+      color: #00ffd4;
+      animation: shimmer 3s infinite;
+    }
+
+    .signature {
+  position: relative;
+  text-align: center;
+  font-size: 1em;
+  padding: 15px 0;
+  width: 100%;
+  background: #000;
+  color: #00ffe1;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-transform: uppercase;
+  overflow: hidden;
+  z-index: 99;
+  box-shadow: 0 0 10px #00ffe1;
+  animation: pulseVIP 2.5s infinite;
+}
+
+/* Effet laser traversant */
+.signature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: laserSweep 4s infinite;
+}
+
+@keyframes pulseVIP {
+  0%, 100% { text-shadow: 0 0 5px #00ffe1, 0 0 15px #00ffe1; }
+  50% { text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2; }
+}
+
+@keyframes laserSweep {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="intro">
+    <div class="film-title1">SHADOW</div>
+    <div class="film-title">Brick</div>
+    <div class="release-date">Sortie : 2025</div>
+  </div>
+
+  <div class="video-container">
+    <iframe src="https://bestwish.lol/sAbMaUgj89rXZ"
+      allowfullscreen webkitallowfullscreen mozallowfullscreen
+      scrolling="no" frameborder="0">
+    </iframe>
+  </div>
+
+  <div class="countdown" id="countdown">Filmi do të ndryshojë pas: 50:00:00</div>
+  <div class="signature">Nga AMARILDO</div>
+
+  <script>
+    function initCountdown() {
+      const existing = localStorage.getItem('countdownEnd');
+      if (!existing || new Date().getTime() > parseInt(existing)) {
+        const now = new Date();
+        const endTime = new Date(now.getTime() + 50 * 60 * 60 * 1000);
+        localStorage.setItem('countdownEnd', endTime.getTime());
+      }
+      updateCountdown();
+    }
+
+    function updateCountdown() {
+      const countdownElement = document.getElementById('countdown');
+      const savedEnd = localStorage.getItem('countdownEnd');
+      if (!savedEnd) return;
+
+      const end = new Date(parseInt(savedEnd));
+
+      function tick() {
+        const remaining = end - new Date();
+        if (remaining <= 0) {
+          const newEnd = new Date(new Date().getTime() + 50 * 60 * 60 * 1000);
+          localStorage.setItem('countdownEnd', newEnd.getTime());
+          return updateCountdown();
+        }
+
+        const hrs = String(Math.floor(remaining / 1000 / 60 / 60)).padStart(2, '0');
+        const mins = String(Math.floor((remaining / 1000 / 60) % 60)).padStart(2, '0');
+        const secs = String(Math.floor((remaining / 1000) % 60)).padStart(2, '0');
+
+        countdownElement.textContent = `Filmi do të ndryshojë pas: ${hrs}:${mins}:${secs}`;
+
+        if (remaining <= 10 * 60 * 60 * 1000) {
+          countdownElement.style.color = '#ff4444';
+          countdownElement.style.animation = 'blinker 1s infinite';
+        } else {
+          countdownElement.style.color = '#00ffd4';
+          countdownElement.style.animation = 'shimmer 3s infinite';
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+    }
+
+    initCountdown();
+  </script>
+
+</body>
+</html>

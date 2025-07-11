@@ -72,31 +72,45 @@
     }
 
     .signature {
-      text-align: center;
-      font-size: 0.8em;
-      margin-bottom: 15px;
-      opacity: 0.5;
-      animation: shimmer 3s infinite;
-    }
+  position: relative;
+  text-align: center;
+  font-size: 1em;
+  padding: 15px 0;
+  width: 100%;
+  background: #000;
+  color: #00ffe1;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-transform: uppercase;
+  overflow: hidden;
+  z-index: 99;
+  box-shadow: 0 0 10px #00ffe1;
+  animation: pulseVIP 2.5s infinite;
+}
 
-    @keyframes fadeIntro {
-      from { opacity: 0; transform: scale(0.95); }
-      to   { opacity: 1; transform: scale(1); }
-    }
+/* Effet laser traversant */
+.signature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: laserSweep 4s infinite;
+}
 
-    @keyframes glowText {
-      from { text-shadow: 0 0 5px #00ffe1; }
-      to   { text-shadow: 0 0 20px #00ffe1, 0 0 5px #00fff2; }
-    }
+@keyframes pulseVIP {
+  0%, 100% { text-shadow: 0 0 5px #00ffe1, 0 0 15px #00ffe1; }
+  50% { text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2; }
+}
 
-    @keyframes shimmer {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
-    }
+@keyframes laserSweep {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
+}
 
-    @keyframes blinker {
-      50% { opacity: 0; }
-    }
   </style>
 </head>
 <body>

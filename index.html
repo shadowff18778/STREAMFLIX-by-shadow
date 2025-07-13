@@ -15,27 +15,38 @@
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
       min-height: 100vh;
     }
 
-    .intro {
+    /* HEADER FIXE */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
       text-align: center;
-      padding: 5vw 4vw 2vw;
-      animation: fadeIntro 1s ease-in-out forwards;
-    }
-
-    .film-title {
-      font-size: clamp(1.8em, 4vw, 3em);
-      text-transform: uppercase;
-      color: #00ffe1;
-      animation: glowText 2s infinite alternate;
+      padding: 10px 0;
+      z-index: 999;
+      box-shadow: 0 0 20px #ff0000;
     }
 
     .film-title1 {
       font-size: clamp(1.8em, 4vw, 3em);
       text-transform: uppercase;
       color: #ff0000;
+      animation: glowText 2s infinite alternate;
+    }
+
+    .intro {
+      text-align: center;
+      padding: 100px 4vw 2vw; /* Pour laisser la place du header */
+    }
+
+    .film-title {
+      font-size: clamp(1.8em, 4vw, 3em);
+      text-transform: uppercase;
+      color: #00ffe1;
       animation: glowText 2s infinite alternate;
     }
 
@@ -46,12 +57,11 @@
     }
 
     .video-container {
-      width: 85%;
+      width: 90%;
       max-width: 800px;
       margin: 30px auto;
       border-radius: 10px;
       box-shadow: 0 0 20px #00ffe1;
-      position: relative;
       aspect-ratio: 16 / 9;
       overflow: hidden;
     }
@@ -63,60 +73,119 @@
       display: block;
     }
 
+    /* DESIGN DU MINUTEUR */
     .countdown {
       text-align: center;
-      font-size: clamp(0.8em, 2vw, 1em);
+      font-size: clamp(1.0em, 3vw, 2em);
       margin: 20px 0;
+      padding: 20px 25px;
+      background: rgba(0, 255, 212, 0.1);
+      border: 2px solid #00ffd4;
+      border-radius: 12px;
       color: #00ffd4;
       animation: shimmer 3s infinite;
+      box-shadow: 0 0 15px #00ffd4;
+      backdrop-filter: blur(5px);
+    }
+
+    .countdown.warning {
+      color: #ff4444;
+      border-color: #ff4444;
+      animation: blinker 1s infinite;
+      background: rgba(255, 68, 68, 0.15);
+      box-shadow: 0 0 15px #ff4444;
+    }
+
+    @keyframes shimmer {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+
+    @keyframes blinker {
+      50% { opacity: 0; }
     }
 
     .signature {
-  position: relative;
-  text-align: center;
-  font-size: 1em;
-  padding: 15px 0;
-  width: 100%;
-  background: #000;
-  color: #00ffe1;
-  letter-spacing: 2px;
-  font-weight: bold;
-  text-transform: uppercase;
-  overflow: hidden;
-  z-index: 99;
-  box-shadow: 0 0 10px #00ffe1;
-  animation: pulseVIP 2.5s infinite;
-}
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 1em;
+      padding: 15px 0;
+      background: #000;
+      color: #00ffe1;
+      letter-spacing: 2px;
+      font-weight: bold;
+      text-transform: uppercase;
+      z-index: 999;
+      box-shadow: 0 0 10px #00ffe1;
+      animation: pulseVIP 2.5s infinite;
+    }
 
-/* Effet laser traversant */
-.signature::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: laserSweep 4s infinite;
-}
+    .signature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: laserSweep 4s infinite;
+    }
 
-@keyframes pulseVIP {
-  0%, 100% { text-shadow: 0 0 5px #00ffe1, 0 0 15px #00ffe1; }
-  50% { text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2; }
-}
+    @keyframes pulseVIP {
+      0%, 100% { text-shadow: 0 0 5px #00ffe1, 0 0 15px #00ffe1; }
+      50% { text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2; }
+    }
 
-@keyframes laserSweep {
-  0% { left: -100%; }
-  50% { left: 0%; }
-  100% { left: 100%; }
-}
+    @keyframes laserSweep {
+      0% { left: -100%; }
+      50% { left: 0%; }
+      100% { left: 100%; }
+    }
 
+    /* ALERT FLOTTANTE */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      color: #00ffe1;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #00ffe1;
+      font-size: 1.5em;
+      font-weight: bold;
+      z-index: 10000;
+      backdrop-filter: blur(8px);
+      animation: popupShow 0.5s ease-out, popupHide 0.5s ease-in 4.5s;
+    }
+
+    @keyframes popupShow {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    @keyframes popupHide {
+      to { opacity: 0; transform: translate(-50%, -40%); }
+    }
+
+    .blurred {
+      filter: blur(8px);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
 
-  <div class="intro">
+  <div class="header">
     <div class="film-title1">SHADOW</div>
+  </div>
+
+  <div class="intro" id="mainContent">
     <div class="film-title">Brick</div>
     <div class="release-date">Sortie : 2025</div>
   </div>
@@ -129,17 +198,36 @@
   </div>
 
   <div class="countdown" id="countdown">Filmi do të ndryshojë pas: 50:00:00</div>
+
   <div class="signature">Nga AMARILDO</div>
 
   <script>
+    let alertShown = false;
+
     function initCountdown() {
-      const existing = localStorage.getItem('countdownEnd');
-      if (!existing || new Date().getTime() > parseInt(existing)) {
-        const now = new Date();
-        const endTime = new Date(now.getTime() + 50 * 60 * 60 * 1000);
-        localStorage.setItem('countdownEnd', endTime.getTime());
+      const saved = localStorage.getItem('countdownEnd');
+      const now = new Date();
+
+      if (!saved || now.getTime() > parseInt(saved)) {
+        const newEnd = new Date(now.getTime() + 50 * 60 * 60 * 1000);
+        localStorage.setItem('countdownEnd', newEnd.getTime());
+        localStorage.setItem('shownAlert', 'false');
       }
+
       updateCountdown();
+    }
+
+    function showPopup(message) {
+      const popup = document.createElement('div');
+      popup.className = 'popup';
+      popup.textContent = message;
+      document.body.appendChild(popup);
+
+      document.getElementById('mainContent').classList.add('blurred');
+      setTimeout(() => {
+        popup.remove();
+        document.getElementById('mainContent').classList.remove('blurred');
+      }, 5000);
     }
 
     function updateCountdown() {
@@ -154,6 +242,7 @@
         if (remaining <= 0) {
           const newEnd = new Date(new Date().getTime() + 50 * 60 * 60 * 1000);
           localStorage.setItem('countdownEnd', newEnd.getTime());
+          localStorage.setItem('shownAlert', 'false');
           return updateCountdown();
         }
 
@@ -164,11 +253,17 @@
         countdownElement.textContent = `Filmi do të ndryshojë pas: ${hrs}:${mins}:${secs}`;
 
         if (remaining <= 10 * 60 * 60 * 1000) {
-          countdownElement.style.color = '#ff4444';
-          countdownElement.style.animation = 'blinker 1s infinite';
+          countdownElement.classList.add('warning');
         } else {
-          countdownElement.style.color = '#00ffd4';
-          countdownElement.style.animation = 'shimmer 3s infinite';
+          countdownElement.classList.remove('warning');
+        }
+
+        const remainingHrs = remaining / (1000 * 60 * 60);
+        const shownAlert = localStorage.getItem('shownAlert');
+
+        if (Math.abs(remainingHrs - 50) < 0.05 && shownAlert === 'false') {
+          showPopup('Filmi ka ndryshuar');
+          localStorage.setItem('shownAlert', 'true');
         }
 
         requestAnimationFrame(tick);

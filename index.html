@@ -10,15 +10,26 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at center, #0d0d0d 0%, #111 100%);
+      background: #0d0d0d;
       color: #fff;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      position: relative;
+      padding-bottom: 120px; /* Pour scroller sous la signature */
     }
 
-    /* HEADER FIXE */
+    canvas#particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     .header {
       position: fixed;
       top: 0;
@@ -27,7 +38,7 @@
       background: #000;
       text-align: center;
       padding: 10px 0;
-      z-index: 999;
+      z-index: 1000;
       box-shadow: 0 0 20px #ff0000;
       border-bottom-left-radius: 25px;
       border-bottom-right-radius: 25px;
@@ -42,7 +53,9 @@
 
     .intro {
       text-align: center;
-      padding: 100px 4vw 2vw; /* Pour laisser la place du header */
+      padding: 100px 4vw 2vw;
+      position: relative;
+      z-index: 1;
     }
 
     .film-title {
@@ -66,6 +79,8 @@
       box-shadow: 0 0 20px #39FF14;
       aspect-ratio: 16 / 9;
       overflow: hidden;
+      position: relative;
+      z-index: 1;
     }
 
     .video-container iframe {
@@ -75,37 +90,35 @@
       display: block;
     }
 
-    /* DESIGN DU MINUTEUR */
-    .countdown {
-      text-align: center;
-      font-size: clamp(1.0em, 3vw, 2em);
-      margin: 20px 0;
-      padding: 20px 25px;
-      background: rgba(0, 255, 212, 0.1);
-      border: 2px solid #39FF14;
-      border-radius: 12px;
-      color: #39FF14;
-      animation: shimmer 3s infinite;
-      box-shadow: 0 0 15px #39FF14;
-      backdrop-filter: blur(5px);
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #00ffe1;
+      font-weight: bold;
+      font-size: 1.2em;
+      z-index: 10;
     }
 
-    .countdown.warning {
-      color: #ff4444;
-      border-color: #ff4444;
-      animation: blinker 1s infinite;
-      background: rgba(255, 68, 68, 0.15);
-      box-shadow: 0 0 15px #ff4444;
+    .spinner {
+      border: 6px solid #333;
+      border-top: 6px solid #00ffe1;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
     }
 
-    @keyframes shimmer {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-
-    @keyframes blinker {
-      50% { opacity: 0; }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .signature {
@@ -128,62 +141,111 @@
       border-top-right-radius: 25px;
     }
 
-    .signature::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-      animation: laserSweep 4s infinite;
-    }
-
     @keyframes pulseVIP {
       0%, 100% { text-shadow: 0 0 5px #00ffe1, 0 0 15px #00ffe1; }
       50% { text-shadow: 0 0 20px #00fff2, 0 0 40px #00fff2; }
     }
 
-    @keyframes laserSweep {
-      0% { left: -100%; }
-      50% { left: 0%; }
+    @keyframes glowText {
+      from { text-shadow: 0 0 5px #ff0000; }
+      to { text-shadow: 0 0 20px #ff0000; }
+    }
+
+    /* ----------- INTRO MODIFIÉE ----------- */
+    #intro {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: introFadeOut 1s ease forwards;
+      animation-delay: 6s;
+    }
+
+    #intro .shadow {
+      font-size: 4em;
+      color: #ff0000;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      font-weight: bold;
+      opacity: 0;
+      animation: shadowAnim 2s ease forwards;
+      animation-delay: 0.5s;
+    }
+
+    #intro .flix {
+      font-size: 2em;
+      color: #00ffe1;
+      letter-spacing: 3px;
+      opacity: 0;
+      animation: flixAnim 1.5s ease forwards;
+      animation-delay: 2.5s;
+    }
+
+    #intro .loader-bar {
+      margin-top: 40px;
+      width: 200px;
+      height: 5px;
+      background: #222;
+      overflow: hidden;
+      position: relative;
+      border-radius: 5px;
+    }
+
+    #intro .loader-bar::before {
+      content: '';
+      position: absolute;
+      height: 100%;
+      width: 60px;
+      background: #00ffe1;
+      animation: loadingBar 2s linear infinite;
+    }
+
+    @keyframes loadingBar {
+      0% { left: -60px; }
       100% { left: 100%; }
     }
 
-    /* ALERT FLOTTANTE */
-    .popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.85);
-      color: #00ffe1;
-      padding: 20px 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #00ffe1;
-      font-size: 1.5em;
-      font-weight: bold;
-      z-index: 10000;
-      backdrop-filter: blur(15px);
-      animation: popupShow 0.5s ease-out, popupHide 0.5s ease-in 4.5s;
+    @keyframes flixAnim {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes popupShow {
-      from { opacity: 0; transform: translate(-50%, -60%); }
-      to { opacity: 1; transform: translate(-50%, -50%); }
+    @keyframes shadowAnim {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes popupHide {
-      to { opacity: 0; transform: translate(-50%, -40%); }
+    @keyframes introFadeOut {
+      to { opacity: 0; visibility: hidden; }
     }
 
-    .blurred {
-      filter: blur(15px);
-      pointer-events: none;
+    #mainContent {
+      opacity: 0;
+      animation: mainFadeIn 1s ease forwards;
+      animation-delay: 6.2s;
+    }
+
+    @keyframes mainFadeIn {
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="shadow">SHADOW</div>
+    <div class="flix">FLIX</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- Particules -->
+  <canvas id="particles-js"></canvas>
 
   <div class="header">
     <div class="film-title1">SHADOW</div>
@@ -197,86 +259,84 @@
   <div class="video-container">
     <iframe src="https://hailindihg.com/e/8morixth97ve"
       allowfullscreen webkitallowfullscreen mozallowfullscreen
-      scrolling="no" frameborder="0">
+      scrolling="no" frameborder="0" id="videoPlayer">
     </iframe>
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Connexion perdue... en attente</div>
+    </div>
   </div>
-
-  <div class="countdown" id="countdown">Filmi do të ndryshojë pas: 50:00:00</div>
 
   <div class="signature">Nga AMARILDO</div>
 
+  <!-- Connexion -->
   <script>
-    let alertShown = false;
+    const iframe = document.getElementById('videoPlayer');
+    const overlay = document.getElementById('loadingOverlay');
 
-    function initCountdown() {
-      const saved = localStorage.getItem('countdownEnd');
-      const now = new Date();
-
-      if (!saved || now.getTime() > parseInt(saved)) {
-        const newEnd = new Date(now.getTime() + 50 * 60 * 60 * 1000);
-        localStorage.setItem('countdownEnd', newEnd.getTime());
-        localStorage.setItem('shownAlert', 'false');
+    function checkConnection() {
+      if (navigator.onLine) {
+        iframe.style.display = 'block';
+        overlay.style.display = 'none';
+      } else {
+        iframe.style.display = 'none';
+        overlay.style.display = 'flex';
       }
-
-      updateCountdown();
     }
 
-    function showPopup(message) {
-      const popup = document.createElement('div');
-      popup.className = 'popup';
-      popup.textContent = message;
-      document.body.appendChild(popup);
+    window.addEventListener('online', checkConnection);
+    window.addEventListener('offline', checkConnection);
+    setInterval(checkConnection, 3000);
+    checkConnection();
+  </script>
 
-      document.getElementById('mainContent').classList.add('blurred');
-      setTimeout(() => {
-        popup.remove();
-        document.getElementById('mainContent').classList.remove('blurred');
-      }, 5000);
+  <!-- Particules -->
+  <script>
+    const canvas = document.getElementById('particles-js');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
-    function updateCountdown() {
-      const countdownElement = document.getElementById('countdown');
-      const savedEnd = localStorage.getItem('countdownEnd');
-      if (!savedEnd) return;
-
-      const end = new Date(parseInt(savedEnd));
-
-      function tick() {
-        const remaining = end - new Date();
-        if (remaining <= 0) {
-          const newEnd = new Date(new Date().getTime() + 50 * 60 * 60 * 1000);
-          localStorage.setItem('countdownEnd', newEnd.getTime());
-          localStorage.setItem('shownAlert', 'false');
-          return updateCountdown();
-        }
-
-        const hrs = String(Math.floor(remaining / 1000 / 60 / 60)).padStart(2, '0');
-        const mins = String(Math.floor((remaining / 1000 / 60) % 60)).padStart(2, '0');
-        const secs = String(Math.floor((remaining / 1000) % 60)).padStart(2, '0');
-
-        countdownElement.textContent = `Filmi do të ndryshojë pas: ${hrs}:${mins}:${secs}`;
-
-        if (remaining <= 10 * 60 * 60 * 1000) {
-          countdownElement.classList.add('warning');
-        } else {
-          countdownElement.classList.remove('warning');
-        }
-
-        const remainingHrs = remaining / (1000 * 60 * 60);
-        const shownAlert = localStorage.getItem('shownAlert');
-
-        if (Math.abs(remainingHrs - 50) < 0.05 && shownAlert === 'false') {
-          showPopup('Filmi ka ndryshuar');
-          localStorage.setItem('shownAlert', 'true');
-        }
-
-        requestAnimationFrame(tick);
+    function createParticles() {
+      particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 2 + 1,
+          dx: (Math.random() - 0.5) * 0.5,
+          dy: (Math.random() - 0.5) * 0.5
+        });
       }
-
-      tick();
     }
 
-    initCountdown();
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ffe1';
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      }
+      requestAnimationFrame(animateParticles);
+    }
+
+    resizeCanvas();
+    createParticles();
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createParticles();
+    });
   </script>
 
 </body>

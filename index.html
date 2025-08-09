@@ -131,15 +131,28 @@ body {
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   color: hsl(var(--foreground));
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+  box-shadow: 0 0 0px transparent;
+  will-change: box-shadow, border-color;
 }
 
 .password-input::placeholder {
   color: hsl(var(--muted-foreground));
+  transition: opacity 0.3s ease;
 }
 
 .password-input:focus {
   outline: none;
   border-color: hsl(var(--primary));
+  background: hsl(var(--background) / 0.65);
+  box-shadow: 0 0 10px hsl(var(--primary) / 0.25);
+}
+
+.password-input:focus::placeholder {
+  opacity: 0.6;
 }
 
 .password-button {
@@ -361,19 +374,34 @@ body {
         </div>
 
         <!-- Main Content (Initially Hidden) -->
-        <div id="mainContent" style="display: none;">
-            <header style="background: hsl(var(--card)); border-bottom: 1px solid hsl(var(--border)); padding: 1rem 0;">
-                <div class="container mx-auto px-4">
-                    <h1 style="font-size: 1.5rem; font-weight: bold; color: hsl(var(--foreground));">Shadow Streaming</h1>
-                </div>
-            </header>
+       <div id="mainContent" style="display: none;">
+  <header style="background: hsl(var(--card)); border-bottom: 1px solid hsl(var(--border)); padding: 1rem 0;">
+    <div class="container mx-auto px-4" style="text-align: center;">
+      <h1 style="font-size: 1.5rem; font-weight: bold; color: hsl(0, 85%, 58%);">SHADOW</h1>
+    </div>
+  </header>
+</div>
+
             
-            <main class="container mx-auto px-4 py-8 space-y-8">
-                <div style="text-align: center; padding: 2rem; background: hsl(var(--card)); border-radius: 0.5rem; border: 1px solid hsl(var(--border));">
-                    <h2 style="font-size: 2rem; font-weight: bold; color: hsl(var(--foreground)); margin-bottom: 1rem;">Diablo</h2>
-                    <p style="color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">2025</p>
-                    <p style="color: hsl(var(--muted-foreground));">Experience the ultimate streaming adventure with premium quality and seamless playback.</p>
-                </div>
+            <main class="container mx-auto px-4 py-8 space-y-8 reveal-parent" id="mainSections">
+  <div class="reveal"
+       style="
+         text-align: center;
+         padding: 2rem;
+         background-image: url('https://ntvb.tmsimg.com/assets/p30061287_v_h8_ab.jpg?w=960&h=540');
+         background-size: cover;
+         background-position: center;
+         background-repeat: no-repeat;
+         background-blend-mode: darken;
+         background-color: rgba(0,0,0,0.7);
+         border-radius: 0.5rem;
+         border: 1px solid hsl(var(--border));">
+    <h2 style="font-size: 2rem; font-weight: bold; color: hsl(var(--foreground)); margin-bottom: 1rem;">Diablo</h2>
+    <p style="color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">2025</p>
+    <p style="color: hsl(var(--muted-foreground));">Experience the ultimate streaming adventure with premium quality and seamless playback.</p>
+  </div>
+
+
                 
                 <div style="background: hsl(var(--card)); border-radius: 0.5rem; border: 1px solid hsl(var(--border)); overflow: hidden;">
                     <div style="position: relative; width: 100%; padding-bottom: 56.25%;">
@@ -397,7 +425,7 @@ body {
     </div>
 
     <script>
-        const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI"];
+        const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI", "ILDO"];
         
         function handlePasswordSubmit(event) {
             event.preventDefault();

@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shadow Streaming</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    
+    <style type="text/css">@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/300/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.0.11/latin/300/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:300;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/300/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/400/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.0.11/latin/400/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:400;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/400/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.0.11/latin/500/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/500/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:500;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/500/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.0.11/latin/600/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/600/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:600;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/600/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/700/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.0.11/latin/700/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:700;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/700/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:800;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/800/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:800;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/800/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:800;src:url(/cf-fonts/s/poppins/5.0.11/latin/800/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.0.11/latin/900/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.0.11/latin-ext/900/normal.woff2);unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Poppins;font-style:normal;font-weight:900;src:url(/cf-fonts/s/poppins/5.0.11/devanagari/900/normal.woff2);unicode-range:U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF;font-display:swap;}</style>
     <style>
-/* Tailwind CSS Base & Reset */
+    /* Tailwind CSS Base & Reset */
 *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
 ::before,::after{--tw-content:''}
 html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif}
@@ -194,7 +194,11 @@ body {
 
 /* Custom Animations */
 .glow-text {
-  animation: glow 3s ease-in-out infinite alternate;
+  position: relative;
+  color: hsl(var(--primary));
+  text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+  animation: glowPulse 3s ease-in-out infinite, floatIn 1.2s ease-out forwards;
+  opacity: 0;
 }
 
 .fade-in-up {
@@ -241,12 +245,23 @@ body {
 }
 
 /* Keyframe Animations */
-@keyframes glow {
-  from { 
-    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)); 
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
   }
-  to { 
-    text-shadow: 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary)); 
+  50% {
+    text-shadow: 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary)), 0 0 40px hsl(var(--primary));
+  }
+}
+
+@keyframes floatIn {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -340,6 +355,7 @@ body {
     height: 2.5rem;
   }
 }
+
 
 /* Border gradients */
 .bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}
@@ -465,119 +481,131 @@ body {
     </div>
 
     <script>
-        // Password validation
-        const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI"];
-        let isAuthenticated = false;
-        
-        // Video intro logic
-        const videoIntro = document.getElementById('videoIntro');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const introVideo = document.getElementById('introVideo');
-        const mainContent = document.getElementById('mainContent');
-        let introCompleted = false;
-        
-        function initializeApp() {
-            // Check authentication status
-            checkAuthentication();
-            
-            // Initialize video intro - démarrage direct
-            if (introVideo) {
-                introVideo.addEventListener('canplay', () => {
-                    introVideo.play().catch(console.error);
-                });
-                introVideo.addEventListener('ended', handleVideoEnded);
-            }
+    // Password validation
+    const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI"];
+    let isAuthenticated = false;
+
+    // Video intro logic
+    const videoIntro = document.getElementById('videoIntro');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const introVideo = document.getElementById('introVideo');
+    const mainContent = document.getElementById('mainContent');
+    let introCompleted = false;
+
+    function initializeApp() {
+        // Check authentication status
+        checkAuthentication();
+
+        // Initialize video intro - démarrage direct
+        if (introVideo) {
+            introVideo.addEventListener('canplay', () => {
+                introVideo.play().catch(console.error);
+            });
+            introVideo.addEventListener('ended', handleVideoEnded);
         }
-        
-        function handleVideoEnded() {
+    }
+
+    function handleVideoEnded() {
+        setTimeout(() => {
+            videoIntro.style.opacity = '0';
+            videoIntro.style.pointerEvents = 'none';
+
             setTimeout(() => {
-                videoIntro.style.opacity = '0';
-                videoIntro.style.pointerEvents = 'none';
-                
-                setTimeout(() => {
-                    videoIntro.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    introCompleted = true;
-                }, 300);
-            }, 800);
+                videoIntro.style.display = 'none';
+                mainContent.style.display = 'block';
+                introCompleted = true;
+            }, 300);
+        }, 800);
+    }
+
+    function checkAuthentication() {
+        const lastAccess = localStorage.getItem('shadowAccess');
+        const accessTime = lastAccess ? parseInt(lastAccess) : 0;
+        const threeHours = 3 * 60 * 60 * 1000;
+
+        if (!lastAccess || Date.now() - accessTime > threeHours) {
+            // Show password overlay after intro
+            if (introCompleted) {
+                document.getElementById('passwordOverlay').style.display = 'flex';
+            }
+        } else {
+            isAuthenticated = true;
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('streamingStatus').style.display = 'block';
         }
-        
-        function checkAuthentication() {
-            const lastAccess = localStorage.getItem('shadowAccess');
-            const accessTime = lastAccess ? parseInt(lastAccess) : 0;
-            const threeHours = 3 * 60 * 60 * 1000;
-            
-            if (!lastAccess || Date.now() - accessTime > threeHours) {
-                // Show password overlay after intro
-                if (introCompleted) {
-                    document.getElementById('passwordOverlay').style.display = 'flex';
-                }
-            } else {
-                isAuthenticated = true;
+    }
+
+    function handlePasswordSubmit(event) {
+        event.preventDefault();
+
+        const passwordInput = document.getElementById('passwordInput');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitButton = document.getElementById('submitButton');
+        const password = passwordInput.value.trim();
+
+        if (!password) {
+            showError('Please enter a password');
+            return;
+        }
+
+        if (validPasswords.includes(password.toUpperCase())) {
+            submitButton.innerHTML = `
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <div class="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-xs sm:text-sm">Verifying...</span>
+                </div>
+            `;
+            submitButton.disabled = true;
+            errorMessage.style.display = 'none';
+
+            setTimeout(() => {
+                localStorage.setItem('shadowAccess', Date.now().toString());
                 document.getElementById('passwordOverlay').style.display = 'none';
                 document.getElementById('streamingStatus').style.display = 'block';
-            }
+                isAuthenticated = true;
+            }, 2000);
+        } else {
+            showError('Invalid password. Access denied.');
+            passwordInput.value = '';
         }
-        
-        function handlePasswordSubmit(event) {
-            event.preventDefault();
-            
-            const passwordInput = document.getElementById('passwordInput');
-            const errorMessage = document.getElementById('errorMessage');
-            const submitButton = document.getElementById('submitButton');
-            const password = passwordInput.value.trim();
-            
-            if (!password) {
-                showError('Please enter a password');
-                return;
-            }
-            
-            if (validPasswords.includes(password.toUpperCase())) {
-                submitButton.innerHTML = `
-                    <div class="flex items-center gap-1 sm:gap-2">
-                        <div class="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                        <span class="text-xs sm:text-sm">Verifying...</span>
-                    </div>
-                `;
-                submitButton.disabled = true;
-                errorMessage.style.display = 'none';
-                
-                setTimeout(() => {
-                    localStorage.setItem('shadowAccess', Date.now().toString());
-                    document.getElementById('passwordOverlay').style.display = 'none';
-                    document.getElementById('streamingStatus').style.display = 'block';
-                    isAuthenticated = true;
-                }, 2000);
-            } else {
-                showError('Invalid password. Access denied.');
-                passwordInput.value = '';
-            }
+    }
+
+    function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    }
+
+    // Offline detection
+    function updateOnlineStatus() {
+        if (!navigator.onLine) {
+            alert('You are currently offline. Some features may not work properly.');
         }
-        
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
+    }
+
+    // Event listeners
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    window.addEventListener('load', initializeApp);
+
+    // Check authentication periodically
+    setTimeout(() => {
+        if (introCompleted) {
+            checkAuthentication();
         }
-        
-        // Offline detection
-        function updateOnlineStatus() {
-            if (!navigator.onLine) {
-                alert('You are currently offline. Some features may not work properly.');
-            }
+    }, 1000);
+
+    // 🔒 Anti-inspect & anti-clic droit
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+            (e.ctrlKey && e.key.toUpperCase() === 'U')
+        ) {
+            e.preventDefault();
         }
-        
-        // Event listeners
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-        window.addEventListener('load', initializeApp);
-        
-        // Check authentication periodically
-        setTimeout(() => {
-            if (introCompleted) {
-                checkAuthentication();
-            }
-        }, 1000);
-    </script>
+    });
+</script>
 </body>
 </html>

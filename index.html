@@ -58,14 +58,14 @@
             }
         }
 
-        /* Animation pour un effet de fondu vers le haut plus fluide */
+        /* Animation pour un effet de fondu vers le haut plus fluide, utilise transform pour le GPU */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 
-        /* Animation pour un effet de zoom d'entrée plus doux */
+        /* Animation pour un effet de zoom d'entrée plus doux, utilise transform pour le GPU */
         @keyframes scaleIn {
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -99,7 +99,7 @@
             box-shadow: 0 0 0 2px rgba(var(--custom-red), 0.5);
         }
 
-        /* Animation du titre de l'en-tête, plus subtile et élégante */
+        /* Animation du titre de l'en-tête, plus subtile et élégante, utilise transform */
         .header-title-animation {
             opacity: 0;
             animation: textReveal 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards;
@@ -415,7 +415,7 @@
                 </p>
             </div>
             <!-- La couleur de la barre de progression est maintenant dynamique -->
-            <div id="movieInfoDivider" class="w-16 sm:w-24 h-1 bg-gradient-to-r from-transparent to-transparent mx-auto rounded-full" style="background-image: linear-gradient(to right, transparent, rgb(var(--custom-red)), transparent)"></div>
+            <div id="movieInfoDivider" class="w-16 sm:w-24 h-1 bg-gradient-to-r from-transparent to-transparent mx-auto rounded-full" style="background-image: linear-gradient(to right, transparent, rgb(var(--custom-red)), transparent);"></div>
         </div>
 
         <!-- Video Player -->
@@ -560,35 +560,34 @@
         // Logique de validation du mot de passe
         const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI"];
         
-        const passwordOverlay = document.getElementById('passwordOverlay');
-        const streamingStatus = document.getElementById('streamingStatus');
-        const passwordInput = document.getElementById('passwordInput');
-        const errorMessage = document.getElementById('errorMessage');
-        const submitButton = document.getElementById('submitButton');
-        const messageBox = document.getElementById('messageBox');
-        const getPasswordButton = document.getElementById('getPasswordButton');
-        const customizationButton = document.getElementById('customizationButton');
-        const customizationModal = document.getElementById('customizationModal');
-        const customizationPanel = document.querySelector('.customization-panel');
-        const shadowTitle = document.getElementById('shadowTitle');
-        const accentColorPicker = document.getElementById('accentColorPicker');
-        const toggleMovieInfo = document.getElementById('toggleMovieInfo');
-        const autoTextSizeToggle = document.getElementById('autoTextSizeToggle');
-        const decreaseTextBtn = document.getElementById('decreaseTextBtn');
-        const increaseTextBtn = document.getElementById('increaseTextBtn');
-        const textSizeValue = document.getElementById('textSizeValue');
-        
-        const pricingModal = document.getElementById('pricingModal');
-        const pricingPopularBadge = document.querySelector('.pricing-popular-badge');
-        const pricingPopularCard = document.querySelector('.pricing-card-popular');
-        
-        const loaderScreen = document.getElementById('loader-screen');
-        const mainHeader = document.getElementById('mainHeader');
-        const mainContent = document.getElementById('mainContent');
-        const mainFooter = document.getElementById('mainFooter');
-        const headerSubtitle = document.getElementById('headerSubtitle');
-        const movieInfoContainer = document.getElementById('movieInfoContainer');
-        const movieInfoDivider = document.getElementById('movieInfoDivider');
+        // Cache des éléments du DOM pour un accès plus rapide et moins de requêtes
+        const dom = {
+            passwordOverlay: document.getElementById('passwordOverlay'),
+            streamingStatus: document.getElementById('streamingStatus'),
+            passwordInput: document.getElementById('passwordInput'),
+            errorMessage: document.getElementById('errorMessage'),
+            submitButton: document.getElementById('submitButton'),
+            messageBox: document.getElementById('messageBox'),
+            getPasswordButton: document.getElementById('getPasswordButton'),
+            customizationButton: document.getElementById('customizationButton'),
+            customizationModal: document.getElementById('customizationModal'),
+            accentColorPicker: document.getElementById('accentColorPicker'),
+            toggleMovieInfo: document.getElementById('toggleMovieInfo'),
+            autoTextSizeToggle: document.getElementById('autoTextSizeToggle'),
+            decreaseTextBtn: document.getElementById('decreaseTextBtn'),
+            increaseTextBtn: document.getElementById('increaseTextBtn'),
+            textSizeValue: document.getElementById('textSizeValue'),
+            pricingModal: document.getElementById('pricingModal'),
+            pricingPopularBadge: document.querySelector('.pricing-popular-badge'),
+            pricingPopularCard: document.querySelector('.pricing-card-popular'),
+            loaderScreen: document.getElementById('loader-screen'),
+            mainHeader: document.getElementById('mainHeader'),
+            mainContent: document.getElementById('mainContent'),
+            mainFooter: document.getElementById('mainFooter'),
+            headerSubtitle: document.getElementById('headerSubtitle'),
+            movieInfoContainer: document.getElementById('movieInfoContainer'),
+            movieInfoDivider: document.getElementById('movieInfoDivider')
+        };
 
         let isAuthenticated = false;
         let baseFontSize = 16;
@@ -597,14 +596,14 @@
         let subtitleText = 'Le futur du divertissement';
         let subtitleIndex = 0;
         
-        // Fonction pour afficher un message temporaire
+        // Fonction pour afficher un message temporaire (maintenant encore plus optimisée)
         function showMessage(message, isError = false) {
             try {
-                messageBox.textContent = message;
-                messageBox.className = 'message-box show';
-                messageBox.style.backgroundColor = isError ? 'rgb(var(--custom-red))' : 'rgb(60 179 113)';
+                dom.messageBox.textContent = message;
+                dom.messageBox.className = 'message-box show';
+                dom.messageBox.style.backgroundColor = isError ? 'rgb(var(--custom-red))' : 'rgb(60 179 113)';
                 setTimeout(() => {
-                    messageBox.classList.remove('show');
+                    dom.messageBox.classList.remove('show');
                 }, 3000);
             } catch (e) {
                 console.error("Erreur lors de l'affichage du message :", e);
@@ -616,18 +615,19 @@
             showMessage("Fonctionnalité en cours de développement... Coming Soon!", false);
         }
 
+        // Fonction utilitaire pour convertir le hex en RGB
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? `${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(result[3], 16)}` : null;
         }
 
-        // Fonction pour sauvegarder les paramètres dans le local storage
+        // Fonction pour sauvegarder les paramètres dans le local storage (utilisée moins souvent)
         function saveSettings() {
             try {
                 const settings = {
                     accentColor: currentAccentColor,
-                    movieInfoVisible: !movieInfoContainer.classList.contains('hidden'),
-                    autoTextSize: autoTextSizeToggle.checked,
+                    movieInfoVisible: !dom.movieInfoContainer.classList.contains('hidden'),
+                    autoTextSize: dom.autoTextSizeToggle.checked,
                     textSize: currentTextSize
                 };
                 localStorage.setItem('shadowSettings', JSON.stringify(settings));
@@ -636,28 +636,28 @@
             }
         }
         
-        // Fonction pour mettre à jour toutes les couleurs dynamiques
+        // Fonction pour mettre à jour toutes les couleurs dynamiques (un seul point d'entrée pour la performance)
         function updateDynamicColors() {
             try {
                 const rgbColor = hexToRgb(currentAccentColor);
                 document.documentElement.style.setProperty('--custom-red', rgbColor);
                 
-                movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
+                dom.movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
                 
                 document.querySelectorAll('.loader-shape').forEach(shape => shape.style.borderColor = currentAccentColor);
                 document.querySelector('.loader-center-glow').style.backgroundColor = currentAccentColor;
                 document.querySelector('.loader-center-glow').style.boxShadow = `0 0 20px ${currentAccentColor}`;
                 
-                pricingPopularBadge.style.backgroundColor = currentAccentColor;
-                pricingPopularCard.style.borderColor = currentAccentColor;
-                pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
+                dom.pricingPopularBadge.style.backgroundColor = currentAccentColor;
+                dom.pricingPopularCard.style.borderColor = currentAccentColor;
+                dom.pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
                 
                 document.querySelectorAll('.accent-text').forEach(el => el.style.color = currentAccentColor);
                 document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = `rgba(${rgbColor}, 0.1)`);
                 document.querySelectorAll('.accent-border').forEach(el => el.style.borderColor = currentAccentColor);
-                document.getElementById('shadowTitle').style.color = currentAccentColor;
-                submitButton.style.backgroundColor = currentAccentColor;
-                submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
+                dom.shadowTitle.style.color = currentAccentColor;
+                dom.submitButton.style.backgroundColor = currentAccentColor;
+                dom.submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
             } catch (e) {
                 console.error("Erreur lors de la mise à jour des couleurs :", e);
             }
@@ -673,24 +673,24 @@
                 }
 
                 currentAccentColor = settings.accentColor;
-                accentColorPicker.value = currentAccentColor;
+                dom.accentColorPicker.value = currentAccentColor;
                 updateDynamicColors();
                 
                 if (settings.movieInfoVisible) {
-                    movieInfoContainer.classList.remove('hidden');
-                    toggleMovieInfo.checked = true;
+                    dom.movieInfoContainer.classList.remove('hidden');
+                    dom.toggleMovieInfo.checked = true;
                 } else {
-                    movieInfoContainer.classList.add('hidden');
-                    toggleMovieInfo.checked = false;
+                    dom.movieInfoContainer.classList.add('hidden');
+                    dom.toggleMovieInfo.checked = false;
                 }
 
-                autoTextSizeToggle.checked = settings.autoTextSize;
+                dom.autoTextSizeToggle.checked = settings.autoTextSize;
                 if (settings.autoTextSize) {
                     enableAutoTextSize();
                 } else {
                     currentTextSize = settings.textSize;
                     document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                    textSizeValue.textContent = `${currentTextSize}%`;
+                    dom.textSizeValue.textContent = `${currentTextSize}%`;
                     disableAutoTextSize();
                 }
             } catch (e) {
@@ -698,7 +698,7 @@
             }
         }
         
-        // Gérer le redimensionnement automatique du texte
+        // Gérer le redimensionnement automatique du texte (débouncing pour la performance)
         let resizeTimeout;
         function autoAdjustTextSize() {
             const width = window.innerWidth;
@@ -716,28 +716,29 @@
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(autoAdjustTextSize, 250);
             });
-            decreaseTextBtn.disabled = true;
-            increaseTextBtn.disabled = true;
+            dom.decreaseTextBtn.disabled = true;
+            dom.increaseTextBtn.disabled = true;
         }
 
         function disableAutoTextSize() {
             window.removeEventListener('resize', autoAdjustTextSize);
-            decreaseTextBtn.disabled = false;
-            increaseTextBtn.disabled = false;
+            dom.decreaseTextBtn.disabled = false;
+            dom.increaseTextBtn.disabled = false;
         }
 
+        // Vérification d'authentification optimisée
         function checkAuthentication() {
             try {
                 const lastAccess = localStorage.getItem('shadowAccess');
                 const threeHours = 3 * 60 * 60 * 1000;
 
                 if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
-                    passwordOverlay.classList.remove('hidden', 'opacity-0');
+                    dom.passwordOverlay.classList.remove('hidden', 'opacity-0');
                     isAuthenticated = false;
                 } else {
                     isAuthenticated = true;
-                    passwordOverlay.classList.add('hidden', 'opacity-0');
-                    streamingStatus.classList.remove('hidden');
+                    dom.passwordOverlay.classList.add('hidden', 'opacity-0');
+                    dom.streamingStatus.classList.remove('hidden');
                 }
             } catch (e) {
                 console.error("Erreur lors de la vérification de l'authentification :", e);
@@ -746,49 +747,48 @@
 
         async function handlePasswordSubmit(event) {
             event.preventDefault();
-            const password = passwordInput.value.trim();
+            const password = dom.passwordInput.value.trim();
 
             if (!password) {
-                errorMessage.textContent = 'Veuillez entrer un mot de passe.';
-                errorMessage.classList.remove('hidden');
+                dom.errorMessage.textContent = 'Veuillez entrer un mot de passe.';
+                dom.errorMessage.classList.remove('hidden');
                 return;
             }
             
-            const originalButtonText = submitButton.innerHTML;
-            const originalButtonClasses = submitButton.className;
+            const originalButtonText = dom.submitButton.innerHTML;
+            const originalButtonClasses = dom.submitButton.className;
 
-            submitButton.classList.add('loading-button');
-            submitButton.innerHTML = `<span class="relative z-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vérification...</span>`;
-            submitButton.disabled = true;
-            errorMessage.classList.add('hidden');
+            dom.submitButton.classList.add('loading-button');
+            dom.submitButton.innerHTML = `<span class="relative z-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vérification...</span>`;
+            dom.submitButton.disabled = true;
+            dom.errorMessage.classList.add('hidden');
 
-            // Optimisation : Utiliser un timeout plus court pour l'attente
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            submitButton.classList.remove('loading-button');
+            dom.submitButton.classList.remove('loading-button');
 
             if (validPasswords.includes(password.toUpperCase())) {
                 localStorage.setItem('shadowAccess', Date.now().toString());
                 
-                passwordOverlay.classList.remove('opacity-100');
-                passwordOverlay.classList.add('opacity-0');
+                dom.passwordOverlay.classList.remove('opacity-100');
+                dom.passwordOverlay.classList.add('opacity-0');
 
-                passwordOverlay.addEventListener('transitionend', () => {
-                    passwordOverlay.classList.add('hidden');
-                    streamingStatus.classList.remove('hidden');
+                dom.passwordOverlay.addEventListener('transitionend', () => {
+                    dom.passwordOverlay.classList.add('hidden');
+                    dom.streamingStatus.classList.remove('hidden');
                 }, { once: true });
                 
                 isAuthenticated = true;
                 showMessage("Accès accordé !", false);
             } else {
-                errorMessage.textContent = 'Mot de passe invalide. Accès refusé.';
-                errorMessage.classList.remove('hidden');
-                passwordInput.value = '';
+                dom.errorMessage.textContent = 'Mot de passe invalide. Accès refusé.';
+                dom.errorMessage.classList.remove('hidden');
+                dom.passwordInput.value = '';
             }
             
-            submitButton.innerHTML = originalButtonText;
-            submitButton.className = originalButtonClasses;
-            submitButton.disabled = false;
+            dom.submitButton.innerHTML = originalButtonText;
+            dom.submitButton.className = originalButtonClasses;
+            dom.submitButton.disabled = false;
         }
 
         // Détection de l'état de la connexion (amélioration de l'alerte par un modal)
@@ -800,28 +800,29 @@
         
         // Fonctions pour le modal de personnalisation
         function openCustomizationModal() {
-            customizationModal.classList.add('show');
+            dom.customizationModal.classList.add('show');
         }
 
         function closeCustomizationModal() {
-            customizationModal.classList.remove('show');
+            dom.customizationModal.classList.remove('show');
         }
         
         // Fonctions pour la fenêtre de prix
         function openPricingModal() {
-            pricingModal.classList.add('show');
+            dom.pricingModal.classList.add('show');
         }
         function closePricingModal() {
-            pricingModal.classList.remove('show');
+            dom.pricingModal.classList.remove('show');
         }
 
         // Optimisation : Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
         function typeWriterEffect(element, text) {
             element.classList.remove('opacity-0');
+            let index = 0;
             function animate() {
-                if (subtitleIndex < text.length) {
-                    element.innerHTML += text.charAt(subtitleIndex);
-                    subtitleIndex++;
+                if (index < text.length) {
+                    element.innerHTML += text.charAt(index);
+                    index++;
                     requestAnimationFrame(animate);
                 }
             }
@@ -835,30 +836,30 @@
                 applySettings();
 
                 // Fait disparaître l'écran de chargement
-                loaderScreen.classList.add('opacity-0');
+                dom.loaderScreen.classList.add('opacity-0');
                 
                 // Cache l'écran de chargement après la transition
                 setTimeout(() => {
-                    loaderScreen.style.display = 'none';
+                    dom.loaderScreen.style.display = 'none';
                 }, 1500); // 1.5s, soit la durée de la transition
 
                 // Affiche le reste du contenu
-                mainHeader.classList.remove('opacity-0');
-                mainContent.classList.remove('opacity-0');
-                mainFooter.classList.remove('opacity-0');
+                dom.mainHeader.classList.remove('opacity-0');
+                dom.mainContent.classList.remove('opacity-0');
+                dom.mainFooter.classList.remove('opacity-0');
                 
                 // Déclenche l'animation du sous-titre
-                typeWriterEffect(headerSubtitle, subtitleText);
+                typeWriterEffect(dom.headerSubtitle, subtitleText);
                 checkAuthentication();
             } catch (e) {
                 console.error("Erreur critique au démarrage de l'application :", e);
             }
         }
 
-        // Correction de la logique de chargement pour plus de fiabilité
+        // Événement d'écoute pour un chargement plus rapide
         window.addEventListener('load', () => {
-             // Utilise un setTimeout pour donner le temps aux ressources de se charger
-             setTimeout(startApp, 1000); 
+            // Démarrage direct de l'application pour une réactivité maximale
+            startApp();
         
             updateOnlineStatus();
             // Mise en place d'un check périodique de l'authentification
@@ -869,29 +870,29 @@
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
 
-        // NOUVEAU: Événements pour la personnalisation et la nouvelle fenêtre
-        customizationButton.addEventListener('click', openCustomizationModal);
-        getPasswordButton.addEventListener('click', openPricingModal);
+        // Événements pour la personnalisation et la nouvelle fenêtre
+        dom.customizationButton.addEventListener('click', openCustomizationModal);
+        dom.getPasswordButton.addEventListener('click', openPricingModal);
         
         // Événement pour le sélecteur de couleur d'accent
-        accentColorPicker.addEventListener('input', (e) => {
+        dom.accentColorPicker.addEventListener('input', (e) => {
             currentAccentColor = e.target.value;
             updateDynamicColors();
             saveSettings();
         });
 
         // Événement pour la visibilité des infos du film
-        toggleMovieInfo.addEventListener('change', (e) => {
+        dom.toggleMovieInfo.addEventListener('change', (e) => {
             if (e.target.checked) {
-                movieInfoContainer.classList.remove('hidden');
+                dom.movieInfoContainer.classList.remove('hidden');
             } else {
-                movieInfoContainer.classList.add('hidden');
+                dom.movieInfoContainer.classList.add('hidden');
             }
             saveSettings();
         });
         
         // Événements pour la taille du texte
-        autoTextSizeToggle.addEventListener('change', (e) => {
+        dom.autoTextSizeToggle.addEventListener('change', (e) => {
             if (e.target.checked) {
                 enableAutoTextSize();
             } else {
@@ -899,19 +900,19 @@
             }
             saveSettings();
         });
-        decreaseTextBtn.addEventListener('click', () => {
+        dom.decreaseTextBtn.addEventListener('click', () => {
             if (currentTextSize > 80) {
                 currentTextSize -= 10;
                 document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                textSizeValue.textContent = `${currentTextSize}%`;
+                dom.textSizeValue.textContent = `${currentTextSize}%`;
             }
             saveSettings();
         });
-        increaseTextBtn.addEventListener('click', () => {
+        dom.increaseTextBtn.addEventListener('click', () => {
             if (currentTextSize < 120) {
                 currentTextSize += 10;
                 document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                textSizeValue.textContent = `${currentTextSize}%`;
+                dom.textSizeValue.textContent = `${currentTextSize}%`;
             }
             saveSettings();
         });

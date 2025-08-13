@@ -163,7 +163,7 @@
             50% { box-shadow: 0 0 40px rgb(var(--custom-red)); }
         }
 
-        /* NOUVELLES keyframes pour l'animation d'entrée du modal */
+        /* keyframes pour l'animation d'entrée du modal */
         @keyframes modalEnter {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
@@ -259,6 +259,29 @@
             opacity: 1;
             pointer-events: auto;
         }
+        /* S'assure que le contenu du modal est scrollable sur les petits écrans */
+        .pricing-modal-content {
+            background-color: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateY(0);
+            transition: all 0.3s ease-in-out;
+            max-width: 42rem; /* max-w-2xl */
+            width: calc(100% - 2rem); /* w-full, with some margin */
+            max-height: calc(100vh - 4rem); /* Hauteur max pour permettre le défilement */
+            overflow-y: auto; /* Permet le défilement si le contenu est trop grand */
+            margin: 2rem;
+            padding: 2rem;
+        }
+        /* Responsive padding pour le contenu du modal */
+        @media (max-width: 640px) {
+            .pricing-modal-content {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
         .pricing-card {
             background-color: rgba(30, 41, 59, 0.9);
             border: 1px solid rgba(71, 85, 105, 0.5);
@@ -267,6 +290,7 @@
             position: relative;
             transform: translateY(0);
             transition: all 0.3s ease-in-out;
+            padding: 1.5rem; /* Ajustement du padding */
         }
         .pricing-card:hover {
             transform: translateY(-5px);
@@ -411,7 +435,8 @@
                 
                 <!-- Password Overlay - Améliorée pour être parfaite et responsive -->
                 <div id="passwordOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 smooth-transition opacity-100 z-10">
-                    <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50">
+                    <!-- max-h-full et overflow-y-auto pour que le contenu puisse défiler si besoin -->
+                    <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50 max-h-full overflow-y-auto">
                         <div class="text-center space-y-1">
                             <!-- Le cadenas est dynamique -->
                             <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
@@ -486,7 +511,7 @@
 
     <!-- NOUVEAU: Modal pour les plans de mot de passe -->
     <div id="pricingModal" class="pricing-modal">
-        <div class="relative bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 max-w-2xl w-full mx-4 shadow-2xl">
+        <div class="pricing-modal-content">
             <button class="close-btn absolute top-4 right-4" onclick="closePricingModal()">
                 <i class="fas fa-times text-xl"></i>
             </button>
@@ -553,7 +578,6 @@
         const increaseTextBtn = document.getElementById('increaseTextBtn');
         const textSizeValue = document.getElementById('textSizeValue');
         
-        // NOUVEAU: Références aux éléments de la nouvelle fenêtre
         const pricingModal = document.getElementById('pricingModal');
         const pricingPopularBadge = document.querySelector('.pricing-popular-badge');
         const pricingPopularCard = document.querySelector('.pricing-card-popular');
@@ -570,15 +594,21 @@
         let baseFontSize = 16;
         let currentTextSize = 100;
         let currentAccentColor = '#DC2626';
-
+        let subtitleText = 'Le futur du divertissement';
+        let subtitleIndex = 0;
+        
         // Fonction pour afficher un message temporaire
         function showMessage(message, isError = false) {
-            messageBox.textContent = message;
-            messageBox.className = 'message-box show';
-            messageBox.style.backgroundColor = isError ? 'rgb(var(--custom-red))' : 'rgb(60 179 113)';
-            setTimeout(() => {
-                messageBox.classList.remove('show');
-            }, 3000);
+            try {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box show';
+                messageBox.style.backgroundColor = isError ? 'rgb(var(--custom-red))' : 'rgb(60 179 113)';
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000);
+            } catch (e) {
+                console.error("Erreur lors de l'affichage du message :", e);
+            }
         }
         
         // Fonction pour afficher le message "Coming soon"
@@ -593,73 +623,78 @@
 
         // Fonction pour sauvegarder les paramètres dans le local storage
         function saveSettings() {
-            const settings = {
-                accentColor: currentAccentColor,
-                movieInfoVisible: !movieInfoContainer.classList.contains('hidden'),
-                autoTextSize: autoTextSizeToggle.checked,
-                textSize: currentTextSize
-            };
-            localStorage.setItem('shadowSettings', JSON.stringify(settings));
+            try {
+                const settings = {
+                    accentColor: currentAccentColor,
+                    movieInfoVisible: !movieInfoContainer.classList.contains('hidden'),
+                    autoTextSize: autoTextSizeToggle.checked,
+                    textSize: currentTextSize
+                };
+                localStorage.setItem('shadowSettings', JSON.stringify(settings));
+            } catch (e) {
+                console.error("Erreur lors de la sauvegarde des paramètres :", e);
+            }
         }
         
         // Fonction pour mettre à jour toutes les couleurs dynamiques
         function updateDynamicColors() {
-            const rgbColor = hexToRgb(currentAccentColor);
-            document.documentElement.style.setProperty('--custom-red', rgbColor);
-            
-            // Mise à jour des styles qui ne peuvent pas utiliser les classes Tailwind
-            movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
-            
-            // Mise à jour des éléments de l'écran de chargement
-            document.querySelectorAll('.loader-shape').forEach(shape => shape.style.borderColor = currentAccentColor);
-            document.querySelector('.loader-center-glow').style.backgroundColor = currentAccentColor;
-            document.querySelector('.loader-center-glow').style.boxShadow = `0 0 20px ${currentAccentColor}`;
-            
-            // Mise à jour du badge et des icônes de la nouvelle fenêtre
-            pricingPopularBadge.style.backgroundColor = currentAccentColor;
-            pricingPopularCard.style.borderColor = currentAccentColor;
-            pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
-            
-            document.querySelectorAll('.accent-text').forEach(el => el.style.color = currentAccentColor);
-            document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = `rgba(${rgbColor}, 0.1)`);
-            document.querySelectorAll('.accent-border').forEach(el => el.style.borderColor = currentAccentColor);
-            document.getElementById('shadowTitle').style.color = currentAccentColor;
-            submitButton.style.backgroundColor = currentAccentColor;
-            submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
+            try {
+                const rgbColor = hexToRgb(currentAccentColor);
+                document.documentElement.style.setProperty('--custom-red', rgbColor);
+                
+                movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
+                
+                document.querySelectorAll('.loader-shape').forEach(shape => shape.style.borderColor = currentAccentColor);
+                document.querySelector('.loader-center-glow').style.backgroundColor = currentAccentColor;
+                document.querySelector('.loader-center-glow').style.boxShadow = `0 0 20px ${currentAccentColor}`;
+                
+                pricingPopularBadge.style.backgroundColor = currentAccentColor;
+                pricingPopularCard.style.borderColor = currentAccentColor;
+                pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
+                
+                document.querySelectorAll('.accent-text').forEach(el => el.style.color = currentAccentColor);
+                document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = `rgba(${rgbColor}, 0.1)`);
+                document.querySelectorAll('.accent-border').forEach(el => el.style.borderColor = currentAccentColor);
+                document.getElementById('shadowTitle').style.color = currentAccentColor;
+                submitButton.style.backgroundColor = currentAccentColor;
+                submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
+            } catch (e) {
+                console.error("Erreur lors de la mise à jour des couleurs :", e);
+            }
         }
 
         // Fonction pour appliquer les paramètres au chargement de la page
         function applySettings() {
-            const settings = JSON.parse(localStorage.getItem('shadowSettings'));
-            if (!settings) {
-                // Si pas de paramètres, on utilise les valeurs par défaut et on sauve
-                saveSettings();
-                return;
-            }
+            try {
+                const settings = JSON.parse(localStorage.getItem('shadowSettings'));
+                if (!settings) {
+                    saveSettings();
+                    return;
+                }
 
-            // Appliquer la couleur d'accent
-            currentAccentColor = settings.accentColor;
-            accentColorPicker.value = currentAccentColor;
-            updateDynamicColors();
-            
-            // Appliquer l'affichage des infos du film
-            if (settings.movieInfoVisible) {
-                movieInfoContainer.classList.remove('hidden');
-                toggleMovieInfo.checked = true;
-            } else {
-                movieInfoContainer.classList.add('hidden');
-                toggleMovieInfo.checked = false;
-            }
+                currentAccentColor = settings.accentColor;
+                accentColorPicker.value = currentAccentColor;
+                updateDynamicColors();
+                
+                if (settings.movieInfoVisible) {
+                    movieInfoContainer.classList.remove('hidden');
+                    toggleMovieInfo.checked = true;
+                } else {
+                    movieInfoContainer.classList.add('hidden');
+                    toggleMovieInfo.checked = false;
+                }
 
-            // Appliquer la taille du texte
-            autoTextSizeToggle.checked = settings.autoTextSize;
-            if (settings.autoTextSize) {
-                enableAutoTextSize();
-            } else {
-                currentTextSize = settings.textSize;
-                document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                textSizeValue.textContent = `${currentTextSize}%`;
-                disableAutoTextSize();
+                autoTextSizeToggle.checked = settings.autoTextSize;
+                if (settings.autoTextSize) {
+                    enableAutoTextSize();
+                } else {
+                    currentTextSize = settings.textSize;
+                    document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
+                    textSizeValue.textContent = `${currentTextSize}%`;
+                    disableAutoTextSize();
+                }
+            } catch (e) {
+                console.error("Erreur lors de l'application des paramètres :", e);
             }
         }
         
@@ -671,6 +706,7 @@
             if (width < 640) { newSize = 80; }
             else if (width < 1024) { newSize = 90; }
             else { newSize = 100; }
+            currentTextSize = newSize; // Mettre à jour la variable
             document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * newSize) / 100}px`);
         }
         
@@ -691,16 +727,20 @@
         }
 
         function checkAuthentication() {
-            const lastAccess = localStorage.getItem('shadowAccess');
-            const threeHours = 3 * 60 * 60 * 1000;
+            try {
+                const lastAccess = localStorage.getItem('shadowAccess');
+                const threeHours = 3 * 60 * 60 * 1000;
 
-            if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
-                passwordOverlay.classList.remove('hidden', 'opacity-0');
-                isAuthenticated = false;
-            } else {
-                isAuthenticated = true;
-                passwordOverlay.classList.add('hidden', 'opacity-0');
-                streamingStatus.classList.remove('hidden');
+                if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
+                    passwordOverlay.classList.remove('hidden', 'opacity-0');
+                    isAuthenticated = false;
+                } else {
+                    isAuthenticated = true;
+                    passwordOverlay.classList.add('hidden', 'opacity-0');
+                    streamingStatus.classList.remove('hidden');
+                }
+            } catch (e) {
+                console.error("Erreur lors de la vérification de l'authentification :", e);
             }
         }
 
@@ -715,21 +755,21 @@
             }
             
             const originalButtonText = submitButton.innerHTML;
+            const originalButtonClasses = submitButton.className;
 
-            // Ajout d'une icône de chargement et d'un effet visuel au bouton
             submitButton.classList.add('loading-button');
             submitButton.innerHTML = `<span class="relative z-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vérification...</span>`;
             submitButton.disabled = true;
             errorMessage.classList.add('hidden');
 
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            // Optimisation : Utiliser un timeout plus court pour l'attente
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             submitButton.classList.remove('loading-button');
 
             if (validPasswords.includes(password.toUpperCase())) {
                 localStorage.setItem('shadowAccess', Date.now().toString());
                 
-                // Animation de sortie du modal
                 passwordOverlay.classList.remove('opacity-100');
                 passwordOverlay.classList.add('opacity-0');
 
@@ -746,8 +786,8 @@
                 passwordInput.value = '';
             }
             
-            // Rétablissement du bouton après la vérification
             submitButton.innerHTML = originalButtonText;
+            submitButton.className = originalButtonClasses;
             submitButton.disabled = false;
         }
 
@@ -775,29 +815,28 @@
             pricingModal.classList.remove('show');
         }
 
-        // Effet d'écriture pour le sous-titre de l'en-tête
-        function typeWriterEffect(element, text, speed) {
-            let i = 0;
+        // Optimisation : Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
+        function typeWriterEffect(element, text) {
             element.classList.remove('opacity-0');
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
+            function animate() {
+                if (subtitleIndex < text.length) {
+                    element.innerHTML += text.charAt(subtitleIndex);
+                    subtitleIndex++;
+                    requestAnimationFrame(animate);
                 }
             }
-            type();
+            requestAnimationFrame(animate);
         }
 
-        // Correction de la logique de chargement pour plus de fiabilité
-        window.addEventListener('load', () => {
-            // Appliquer les paramètres sauvegardés avant le rendu
-            applySettings();
+        // Fonction pour gérer le démarrage de l'application
+        function startApp() {
+             try {
+                // Appliquer les paramètres sauvegardés avant le rendu
+                applySettings();
 
-            // Un seul setTimeout pour gérer le délai et l'affichage du contenu.
-            setTimeout(() => {
                 // Fait disparaître l'écran de chargement
                 loaderScreen.classList.add('opacity-0');
+                
                 // Cache l'écran de chargement après la transition
                 setTimeout(() => {
                     loaderScreen.style.display = 'none';
@@ -809,15 +848,24 @@
                 mainFooter.classList.remove('opacity-0');
                 
                 // Déclenche l'animation du sous-titre
-                typeWriterEffect(headerSubtitle, 'Le futur du divertissement', 80);
+                typeWriterEffect(headerSubtitle, subtitleText);
                 checkAuthentication();
-            }, 2000); // Durée totale du chargement initial (2 secondes)
+            } catch (e) {
+                console.error("Erreur critique au démarrage de l'application :", e);
+            }
+        }
+
+        // Correction de la logique de chargement pour plus de fiabilité
+        window.addEventListener('load', () => {
+             // Utilise un setTimeout pour donner le temps aux ressources de se charger
+             setTimeout(startApp, 1000); 
         
             updateOnlineStatus();
             // Mise en place d'un check périodique de l'authentification
             setInterval(checkAuthentication, 60 * 1000); 
         });
 
+        // Écouteurs d'événements pour le statut de la connexion
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
 

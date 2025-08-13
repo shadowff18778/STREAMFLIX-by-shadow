@@ -23,6 +23,8 @@
             --shadow-light-gray: 0 0% 20%;
             --shadow-white: 0 0% 98%;
             --shadow-text-size: 1rem;
+            --like-color: 34 197 94; /* Green-500 */
+            --dislike-color: 239 68 68; /* Red-500 */
         }
         
         /* Styles de base pour le corps de la page */
@@ -308,7 +310,7 @@
         }
         .pricing-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(var(--custom-red), 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
         .pricing-card-popular {
             transform: scale(1.05);
@@ -344,6 +346,41 @@
         .report-button:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* NOUVEAU: Styles pour les boutons Like/Dislike */
+        .rating-container {
+            background: rgba(30, 41, 59, 0.7); /* gray-800 avec transparence */
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(71, 85, 105, 0.5); /* gray-700 avec transparence */
+            display: inline-flex;
+            gap: 1.5rem;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
+        }
+        .rating-button {
+            background: transparent;
+            border: none;
+            color: #d1d5db; /* gray-400 */
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+            outline: none;
+        }
+        .rating-button:hover {
+            transform: scale(1.1);
+        }
+        .rating-button.liked {
+            color: rgb(var(--like-color));
+            text-shadow: 0 0 8px rgba(var(--like-color), 0.6);
+            transform: scale(1.2);
+        }
+        .rating-button.disliked {
+            color: rgb(var(--dislike-color));
+            text-shadow: 0 0 8px rgba(var(--dislike-color), 0.6);
+            transform: scale(1.2);
         }
 
     </style>
@@ -525,6 +562,18 @@
                     <span class="text-sm font-medium accent-text">Streaming en cours</span>
                 </div>
             </div>
+
+            <!-- NOUVEAU: Boutons J'aime/Je n'aime pas -->
+            <div class="mt-8 flex justify-center fade-in-up">
+                <div class="rating-container">
+                    <button id="likeButton" class="rating-button" title="J'aime">
+                        <i class="fa-solid fa-thumbs-up"></i>
+                    </button>
+                    <button id="dislikeButton" class="rating-button" title="Je n'aime pas">
+                        <i class="fa-solid fa-thumbs-down"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
     
@@ -675,6 +724,11 @@
         // NOUVEAU: Constantes pour la vérification robot
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
         const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
+
+        // NOUVEAU: Constantes pour le système de notation
+        const RATING_EXPIRATION_MS = 24 * 60 * 60 * 1000;
+        const MOVIE_ID = 'Diablo'; // ID unique pour ce film
+
         
         // Cache des éléments du DOM pour un accès plus rapide et moins de requêtes
         const dom = {
@@ -712,11 +766,13 @@
             robotCheckbox: document.getElementById('robotCheckbox'),
             robotSubmitButton: document.getElementById('robotSubmitButton'),
             robotLoadingAnimation: document.getElementById('robotLoadingAnimation'),
-            // NOUVEAUX ÉLÉMENTS DU DOM
             backgroundImageInput: document.getElementById('backgroundImageInput'),
             backgroundPreviewContainer: document.getElementById('backgroundPreviewContainer'),
             backgroundPreview: document.getElementById('backgroundPreview'),
-            resetBackgroundBtn: document.getElementById('resetBackgroundBtn')
+            resetBackgroundBtn: document.getElementById('resetBackgroundBtn'),
+            // NOUVEAUX ÉLÉMENTS DU DOM pour le système de notation
+            likeButton: document.getElementById('likeButton'),
+            dislikeButton: document.getElementById('dislikeButton'),
         };
 
         let isAuthenticated = false;
@@ -1041,6 +1097,57 @@
             startStreaming();
         }
 
+        // NOUVEAU: Système de Like/Dislike
+        function getRating() {
+            const storedRating = localStorage.getItem(`shadow-${MOVIE_ID}-rating`);
+            if (storedRating) {
+                const data = JSON.parse(storedRating);
+                if (Date.now() - data.timestamp < RATING_EXPIRATION_MS) {
+                    return data.type;
+                } else {
+                    localStorage.removeItem(`shadow-${MOVIE_ID}-rating`);
+                }
+            }
+            return null;
+        }
+
+        function setRating(ratingType) {
+            const currentRating = getRating();
+            const buttons = [dom.likeButton, dom.dislikeButton];
+
+            // Si on clique sur le même bouton, on annule la notation
+            if (currentRating === ratingType) {
+                localStorage.removeItem(`shadow-${MOVIE_ID}-rating`);
+                buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
+                showMessage("Votre vote a été retiré.", false);
+            } else {
+                // Sinon, on met à jour la notation
+                const data = {
+                    type: ratingType,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(`shadow-${MOVIE_ID}-rating`, JSON.stringify(data));
+                
+                buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
+                if (ratingType === 'like') {
+                    dom.likeButton.classList.add('liked');
+                    showMessage("Merci pour votre appréciation !", false);
+                } else {
+                    dom.dislikeButton.classList.add('disliked');
+                    showMessage("Votre avis a été pris en compte.", true);
+                }
+            }
+        }
+        
+        function applyInitialRating() {
+            const rating = getRating();
+            if (rating === 'like') {
+                dom.likeButton.classList.add('liked');
+            } else if (rating === 'dislike') {
+                dom.dislikeButton.classList.add('disliked');
+            }
+        }
+
         // Optimisation : Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
         function typeWriterEffect(element, text) {
             element.classList.remove('opacity-0');
@@ -1077,6 +1184,9 @@
                 // Déclenche l'animation du sous-titre
                 typeWriterEffect(dom.headerSubtitle, subtitleText);
                 checkAuthentication();
+                
+                // NOUVEAU: Applique l'état de notation initial
+                applyInitialRating();
             } catch (e) {
                 console.error("Erreur critique au démarrage de l'application :", e);
             }
@@ -1172,6 +1282,10 @@
             saveSettings();
             showMessage("Fond d'écran réinitialisé.", false);
         });
+        
+        // NOUVEAU: Écouteurs d'événements pour les boutons de notation
+        dom.likeButton.addEventListener('click', () => setRating('like'));
+        dom.dislikeButton.addEventListener('click', () => setRating('dislike'));
 
         // 🔒 Anti-inspect & anti-clic droit
         // Attention : cette méthode n'est pas infaillible et peut être frustrante pour l'utilisateur

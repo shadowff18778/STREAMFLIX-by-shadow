@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-
+    
     <style>
         /* Définition des variables de couleur pour un thème cohérent */
         :root {
@@ -34,6 +34,20 @@
             min-height: 100vh;
             overflow-x: hidden;
             font-size: var(--shadow-text-size);
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        /* Ajout d'un overlay pour que le texte reste lisible sur l'image de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
         }
         
         /* Animation du titre SHADOW, maintenant dynamique avec la couleur d'accent */
@@ -169,7 +183,7 @@
             to { opacity: 1; transform: scale(1); }
         }
         /* Styles du modal de mot de passe */
-        #passwordOverlay .modal-content {
+        #passwordOverlay .modal-content, #reportModal .modal-content, #pricingModal .modal-content, #robotCheckModal .modal-content {
             animation: modalEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
             position: relative;
         }
@@ -208,7 +222,7 @@
             box-shadow: 0 6px 20px rgba(var(--custom-red), 0.6);
         }
 
-        /* NOUVEAU: Styles pour le bouton et le modal de personnalisation */
+        /* Styles pour le bouton et le modal de personnalisation */
         .customization-button {
             position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.5rem;
             background-color: transparent; border: none; color: hsl(var(--shadow-white));
@@ -248,19 +262,19 @@
             box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
         }
 
-        /* Styles pour la fenêtre de prix */
-        .pricing-modal {
+        /* Styles pour la fenêtre de prix et de signalement */
+        .pricing-modal, .report-modal, .robot-check-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
             z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
         }
-        .pricing-modal.show {
+        .pricing-modal.show, .report-modal.show, .robot-check-modal.show {
             opacity: 1;
             pointer-events: auto;
         }
         /* S'assure que le contenu du modal est scrollable sur les petits écrans */
-        .pricing-modal-content {
+        .modal-content-container {
             background-color: rgba(30, 41, 59, 0.9);
             border: 1px solid rgba(71, 85, 105, 0.5);
             border-radius: 1.5rem;
@@ -277,7 +291,7 @@
         }
         /* Responsive padding pour le contenu du modal */
         @media (max-width: 640px) {
-            .pricing-modal-content {
+            .modal-content-container {
                 padding: 1rem;
                 margin: 1rem;
             }
@@ -317,6 +331,20 @@
             font-weight: 700;
             text-transform: uppercase;
         }
+        
+        /* Styles pour le bouton de signalement */
+        .report-button {
+            position: relative; z-index: 1; padding: 0.75rem 2rem;
+            border-radius: 9999px; /* rounded-full */
+            font-weight: 600; /* font-semibold */
+            background-color: #4b5563; /* gray-700 */
+            color: hsl(var(--shadow-white));
+            transition: all 0.3s ease-in-out;
+        }
+        .report-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
 
     </style>
 </head>
@@ -345,7 +373,7 @@
                 </h1>
                 <p id="headerSubtitle" class="text-lg md:text-xl text-gray-400 font-medium overflow-hidden whitespace-nowrap opacity-0"></p>
             </div>
-            <!-- Bouton de personnalisation, icône mise à jour -->
+            <!-- Bouton de personnalisation -->
             <button id="customizationButton" class="customization-button">
                 <i class="fas fa-sliders-h"></i>
             </button>
@@ -394,8 +422,24 @@
                         <input type="checkbox" id="toggleMovieInfo" class="h-5 w-5 rounded form-checkbox accent-text border-gray-500 bg-gray-700" checked>
                     </div>
                 </div>
+
+                <!-- NOUVELLE SECTION: Personnalisation du fond d'écran -->
+                <div>
+                    <h3 class="text-lg font-semibold">Fond d'écran</h3>
+                    <div class="mt-2 space-y-2">
+                        <label for="backgroundImageInput" class="w-full text-center py-2 px-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition cursor-pointer">
+                            Choisir une image
+                        </label>
+                        <input type="file" id="backgroundImageInput" class="hidden" accept="image/*">
+                        <div id="backgroundPreviewContainer" class="hidden flex items-center justify-between gap-2 p-2 bg-gray-800 rounded-lg">
+                            <img id="backgroundPreview" class="w-16 h-16 object-cover rounded-lg">
+                            <button id="resetBackgroundBtn" class="p-2 text-gray-400 hover:text-red-500 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
         </div>
     </div>
 
@@ -501,17 +545,23 @@
                         <div class="w-1 h-1 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
                     </div>
                 </div>
-                <!-- Bouton pour obtenir un mot de passe personnel -->
-                <button id="getPasswordButton" class="personal-password-button">
-                    Get your personal password
-                </button>
+                <!-- Boutons du pied de page -->
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <button id="getPasswordButton" class="personal-password-button">
+                        Get your personal password
+                    </button>
+                    <!-- Nouveau bouton de signalement -->
+                    <button id="reportButton" class="report-button">
+                        Signaler un problème
+                    </button>
+                </div>
             </div>
         </div>
     </footer>
 
-    <!-- NOUVEAU: Modal pour les plans de mot de passe -->
+    <!-- Modal pour les plans de mot de passe -->
     <div id="pricingModal" class="pricing-modal">
-        <div class="pricing-modal-content">
+        <div class="modal-content-container">
             <button class="close-btn absolute top-4 right-4" onclick="closePricingModal()">
                 <i class="fas fa-times text-xl"></i>
             </button>
@@ -555,10 +605,76 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal de signalement -->
+    <div id="reportModal" class="report-modal">
+        <div class="modal-content-container max-w-lg">
+            <button class="close-btn absolute top-4 right-4" onclick="closeReportModal()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="text-center mb-8 space-y-2">
+                <h2 class="text-3xl font-bold">Signaler un problème</h2>
+                <p class="text-gray-400">Votre feedback nous aide à améliorer l'expérience.</p>
+            </div>
+
+            <form id="reportForm" class="space-y-6">
+                <div>
+                    <label for="reportType" class="block text-sm font-medium text-gray-300 mb-2">Type de problème</label>
+                    <select id="reportType" class="form-input w-full h-12 px-4 rounded-lg bg-gray-800 text-white cursor-pointer">
+                        <option value="player">Problème avec le lecteur vidéo</option>
+                        <option value="password">Mot de passe incorrect</option>
+                        <option value="access">Problème d'accès</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="reportMessage" class="block text-sm font-medium text-gray-300 mb-2">Message (facultatif)</label>
+                    <textarea id="reportMessage" rows="4" class="form-input w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-500" placeholder="Décrivez votre problème en quelques mots..."></textarea>
+                </div>
+                <button type="submit" id="reportSubmitButton" class="w-full h-12 rounded-lg password-submit-button">
+                    Envoyer le rapport
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de vérification robot -->
+    <div id="robotCheckModal" class="robot-check-modal">
+        <div class="modal-content-container max-w-sm">
+            <div class="text-center mb-6 space-y-2">
+                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-shield-halved text-xl accent-text"></i>
+                </div>
+                <h2 class="text-2xl font-bold">Vérification de sécurité</h2>
+                <p class="text-gray-400 text-sm">Pour accéder au contenu, veuillez confirmer que vous n'êtes pas un robot.</p>
+            </div>
+
+            <!-- Formulaire de la vérification robot -->
+            <form id="robotCheckForm" class="space-y-6" onsubmit="handleRobotCheckSubmit(event)">
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="robotCheckbox" class="h-6 w-6 rounded accent-text border-gray-500 bg-gray-700 cursor-pointer">
+                    <label for="robotCheckbox" class="text-lg font-medium text-gray-300 select-none">Je ne suis pas un robot</label>
+                </div>
+                <button type="submit" id="robotSubmitButton" class="w-full h-12 rounded-lg password-submit-button">
+                    Valider
+                </button>
+            </form>
+
+            <!-- Animation de chargement pour la vérification -->
+            <div id="robotLoadingAnimation" class="hidden flex flex-col items-center justify-center mt-6">
+                <div class="w-10 h-10 border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
+                <p class="mt-4 text-gray-400">Vérification en cours...</p>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Logique de validation du mot de passe
         const validPasswords = ["ERVIS", "SHADOW18", "ORGITO", "ELDI"];
+        
+        // NOUVEAU: Constantes pour la vérification robot
+        const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
+        const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
         
         // Cache des éléments du DOM pour un accès plus rapide et moins de requêtes
         const dom = {
@@ -569,6 +685,7 @@
             submitButton: document.getElementById('submitButton'),
             messageBox: document.getElementById('messageBox'),
             getPasswordButton: document.getElementById('getPasswordButton'),
+            reportButton: document.getElementById('reportButton'),
             customizationButton: document.getElementById('customizationButton'),
             customizationModal: document.getElementById('customizationModal'),
             accentColorPicker: document.getElementById('accentColorPicker'),
@@ -586,7 +703,20 @@
             mainFooter: document.getElementById('mainFooter'),
             headerSubtitle: document.getElementById('headerSubtitle'),
             movieInfoContainer: document.getElementById('movieInfoContainer'),
-            movieInfoDivider: document.getElementById('movieInfoDivider')
+            movieInfoDivider: document.getElementById('movieInfoDivider'),
+            reportModal: document.getElementById('reportModal'),
+            reportForm: document.getElementById('reportForm'),
+            reportSubmitButton: document.getElementById('reportSubmitButton'),
+            robotCheckModal: document.getElementById('robotCheckModal'),
+            robotCheckForm: document.getElementById('robotCheckForm'),
+            robotCheckbox: document.getElementById('robotCheckbox'),
+            robotSubmitButton: document.getElementById('robotSubmitButton'),
+            robotLoadingAnimation: document.getElementById('robotLoadingAnimation'),
+            // NOUVEAUX ÉLÉMENTS DU DOM
+            backgroundImageInput: document.getElementById('backgroundImageInput'),
+            backgroundPreviewContainer: document.getElementById('backgroundPreviewContainer'),
+            backgroundPreview: document.getElementById('backgroundPreview'),
+            resetBackgroundBtn: document.getElementById('resetBackgroundBtn')
         };
 
         let isAuthenticated = false;
@@ -594,7 +724,6 @@
         let currentTextSize = 100;
         let currentAccentColor = '#DC2626';
         let subtitleText = 'Le futur du divertissement';
-        let subtitleIndex = 0;
         
         // Fonction pour afficher un message temporaire (maintenant encore plus optimisée)
         function showMessage(message, isError = false) {
@@ -628,7 +757,8 @@
                     accentColor: currentAccentColor,
                     movieInfoVisible: !dom.movieInfoContainer.classList.contains('hidden'),
                     autoTextSize: dom.autoTextSizeToggle.checked,
-                    textSize: currentTextSize
+                    textSize: currentTextSize,
+                    backgroundImage: localStorage.getItem('shadowBackground') // Sauvegarder l'image si elle existe
                 };
                 localStorage.setItem('shadowSettings', JSON.stringify(settings));
             } catch (e) {
@@ -658,6 +788,11 @@
                 dom.shadowTitle.style.color = currentAccentColor;
                 dom.submitButton.style.backgroundColor = currentAccentColor;
                 dom.submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
+                
+                // Mettre à jour la couleur des boutons dynamiques
+                dom.reportSubmitButton.style.backgroundColor = currentAccentColor;
+                dom.robotSubmitButton.style.backgroundColor = currentAccentColor;
+
             } catch (e) {
                 console.error("Erreur lors de la mise à jour des couleurs :", e);
             }
@@ -693,6 +828,15 @@
                     dom.textSizeValue.textContent = `${currentTextSize}%`;
                     disableAutoTextSize();
                 }
+
+                // NOUVEAU : Appliquer l'image de fond sauvegardée
+                const savedImage = localStorage.getItem('shadowBackground');
+                if (savedImage) {
+                    document.body.style.backgroundImage = `url(${savedImage})`;
+                    dom.backgroundPreview.src = savedImage;
+                    dom.backgroundPreviewContainer.classList.remove('hidden');
+                }
+
             } catch (e) {
                 console.error("Erreur lors de l'application des paramètres :", e);
             }
@@ -735,6 +879,7 @@
                 if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
                     dom.passwordOverlay.classList.remove('hidden', 'opacity-0');
                     isAuthenticated = false;
+                    dom.passwordInput.value = '';
                 } else {
                     isAuthenticated = true;
                     dom.passwordOverlay.classList.add('hidden', 'opacity-0');
@@ -743,6 +888,20 @@
             } catch (e) {
                 console.error("Erreur lors de la vérification de l'authentification :", e);
             }
+        }
+
+        // Fonction pour passer au streaming après toutes les vérifications
+        function startStreaming() {
+            dom.passwordOverlay.classList.remove('opacity-100');
+            dom.passwordOverlay.classList.add('opacity-0');
+
+            dom.passwordOverlay.addEventListener('transitionend', () => {
+                dom.passwordOverlay.classList.add('hidden');
+            }, { once: true });
+            
+            dom.streamingStatus.classList.remove('hidden');
+            isAuthenticated = true;
+            showMessage("Accès accordé !", false);
         }
 
         async function handlePasswordSubmit(event) {
@@ -769,17 +928,19 @@
 
             if (validPasswords.includes(password.toUpperCase())) {
                 localStorage.setItem('shadowAccess', Date.now().toString());
-                
-                dom.passwordOverlay.classList.remove('opacity-100');
-                dom.passwordOverlay.classList.add('opacity-0');
 
-                dom.passwordOverlay.addEventListener('transitionend', () => {
-                    dom.passwordOverlay.classList.add('hidden');
-                    dom.streamingStatus.classList.remove('hidden');
-                }, { once: true });
+                // NOUVEAU: Vérifier si la vérification robot est nécessaire
+                const lastRobotCheck = localStorage.getItem(LAST_ROBOT_CHECK_KEY);
                 
-                isAuthenticated = true;
-                showMessage("Accès accordé !", false);
+                if (!lastRobotCheck || Date.now() - parseInt(lastRobotCheck) > ONE_WEEK_IN_MS) {
+                    // Cacher la fenêtre du mot de passe en douceur avant d'ouvrir la suivante
+                    dom.passwordOverlay.classList.add('hidden');
+                    openRobotCheckModal();
+                } else {
+                    // Si la vérification est à jour, on passe directement au streaming
+                    startStreaming();
+                }
+
             } else {
                 dom.errorMessage.textContent = 'Mot de passe invalide. Accès refusé.';
                 dom.errorMessage.classList.remove('hidden');
@@ -813,6 +974,71 @@
         }
         function closePricingModal() {
             dom.pricingModal.classList.remove('show');
+        }
+        
+        // Fonctions pour le modal de signalement
+        function openReportModal() {
+            dom.reportModal.classList.add('show');
+        }
+        function closeReportModal() {
+            dom.reportModal.classList.remove('show');
+            dom.reportForm.reset(); // Réinitialise le formulaire à la fermeture
+            dom.reportSubmitButton.innerHTML = "Envoyer le rapport"; // Réinitialise le texte du bouton
+            dom.reportSubmitButton.disabled = false;
+        }
+        
+        async function handleReportSubmit(event) {
+            event.preventDefault();
+            
+            const originalButtonText = dom.reportSubmitButton.innerHTML;
+            dom.reportSubmitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Envoi en cours...`;
+            dom.reportSubmitButton.disabled = true;
+
+            // Simuler l'envoi pendant 3 secondes
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            dom.reportSubmitButton.innerHTML = originalButtonText;
+            dom.reportSubmitButton.disabled = false;
+            
+            closeReportModal();
+            showMessage("Rapport envoyé avec succès. Merci !", false);
+        }
+        
+        // NOUVEAU: Fonctions pour le modal de vérification robot
+        function openRobotCheckModal() {
+            dom.robotCheckModal.classList.add('show');
+            dom.robotCheckForm.classList.remove('hidden');
+            dom.robotLoadingAnimation.classList.add('hidden');
+            dom.robotCheckbox.checked = false; // S'assurer que la case est décochée
+        }
+        function closeRobotCheckModal() {
+            dom.robotCheckModal.classList.remove('show');
+            dom.robotCheckbox.checked = false;
+        }
+
+        async function handleRobotCheckSubmit(event) {
+            event.preventDefault();
+            
+            if (!dom.robotCheckbox.checked) {
+                showMessage("Veuillez cocher la case de vérification.", true);
+                return;
+            }
+            
+            // Masquer le formulaire et afficher l'animation de chargement
+            dom.robotCheckForm.classList.add('hidden');
+            dom.robotLoadingAnimation.classList.remove('hidden');
+
+            // Simuler la vérification pendant 5 secondes
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            
+            // Masquer l'animation de chargement
+            dom.robotLoadingAnimation.classList.add('hidden');
+            
+            // Stocker le timestamp de la vérification dans le local storage
+            localStorage.setItem(LAST_ROBOT_CHECK_KEY, Date.now().toString());
+            
+            closeRobotCheckModal();
+            startStreaming();
         }
 
         // Optimisation : Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
@@ -873,8 +1099,10 @@
         // Événements pour la personnalisation et la nouvelle fenêtre
         dom.customizationButton.addEventListener('click', openCustomizationModal);
         dom.getPasswordButton.addEventListener('click', openPricingModal);
+        dom.reportButton.addEventListener('click', openReportModal);
+        dom.reportForm.addEventListener('submit', handleReportSubmit);
         
-        // Événement pour le sélecteur de couleur d'accent
+        // Événements pour le sélecteur de couleur d'accent
         dom.accentColorPicker.addEventListener('input', (e) => {
             currentAccentColor = e.target.value;
             updateDynamicColors();
@@ -915,6 +1143,34 @@
                 dom.textSizeValue.textContent = `${currentTextSize}%`;
             }
             saveSettings();
+        });
+
+        // NOUVEAU: Événement pour le sélecteur d'image de fond
+        dom.backgroundImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Image = reader.result;
+                    document.body.style.backgroundImage = `url(${base64Image})`;
+                    dom.backgroundPreview.src = base64Image;
+                    dom.backgroundPreviewContainer.classList.remove('hidden');
+                    localStorage.setItem('shadowBackground', base64Image);
+                    saveSettings();
+                    showMessage("Image de fond mise à jour !", false);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // NOUVEAU: Événement pour le bouton de réinitialisation de l'image de fond
+        dom.resetBackgroundBtn.addEventListener('click', () => {
+            document.body.style.backgroundImage = 'none';
+            dom.backgroundPreview.src = '';
+            dom.backgroundPreviewContainer.classList.add('hidden');
+            localStorage.removeItem('shadowBackground');
+            saveSettings();
+            showMessage("Fond d'écran réinitialisé.", false);
         });
 
         // 🔒 Anti-inspect & anti-clic droit

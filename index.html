@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shadow Streaming</title>
-    <!-- On charge Tailwind CSS pour un design moderne et facile à gérer -->
+    <!-- Tailwind CSS pour un design moderne et facile à gérer -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- On charge Font Awesome pour les icônes -->
+    <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Police de caractères Inter, recommandée pour sa lisibilité -->
+    <!-- Police de caractères Inter pour une meilleure lisibilité -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -17,20 +17,17 @@
     <style>
         /* Définition des variables de couleur pour un thème cohérent */
         :root {
-            --custom-red: 220 38 38; /* Par défaut, red-600 */
+            --custom-red: 220 38 38; /* Valeur par défaut */
             --shadow-dark: 0 0% 8%;
-            --shadow-gray: 0 0% 16%;
-            --shadow-light-gray: 0 0% 20%;
             --shadow-white: 0 0% 98%;
             --shadow-text-size: 1rem;
             --like-color: 34 197 94; /* Green-500 */
             --dislike-color: 239 68 68; /* Red-500 */
         }
         
-        /* Styles de base pour le corps de la page */
+        /* Styles de base pour le corps de la page, utilisant des variables pour la cohérence */
         body {
             background-color: hsl(var(--shadow-dark));
-            background-image: linear-gradient(to bottom, hsl(var(--shadow-dark)), rgba(18, 18, 18, 0.5));
             color: hsl(var(--shadow-white));
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
@@ -43,7 +40,7 @@
             transition: background-image 0.5s ease-in-out;
         }
 
-        /* Ajout d'un overlay pour que le texte reste lisible sur l'image de fond */
+        /* Overlay pour que le texte reste lisible sur l'image de fond */
         body::before {
             content: '';
             position: fixed;
@@ -74,14 +71,14 @@
             }
         }
 
-        /* Animation pour un effet de fondu vers le haut plus fluide, utilise transform pour le GPU */
+        /* Animation pour un effet de fondu vers le haut plus fluide (utilise transform pour le GPU) */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 
-        /* Animation pour un effet de zoom d'entrée plus doux, utilise transform pour le GPU */
+        /* Animation pour un effet de zoom d'entrée plus doux (utilise transform pour le GPU) */
         @keyframes scaleIn {
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -91,7 +88,7 @@
         /* Transition personnalisée pour une fluidité accrue */
         .smooth-transition { transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        /* Styles pour le modal de message */
+        /* Styles pour le modal de message (remplacement de alert()) */
         .message-box {
             position: fixed; top: 2rem; left: 50%;
             transform: translateX(-50%); padding: 1rem 2rem;
@@ -142,7 +139,7 @@
             100% { box-shadow: 0 0 5px rgb(var(--custom-red)); opacity: 0.5; }
         }
 
-        /* Écran de chargement pour que la couleur soit dynamique */
+        /* Écran de chargement */
         #loader-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: hsl(var(--shadow-dark)); display: flex;
@@ -208,7 +205,7 @@
         .button-spinner { display: inline-block; animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Styles pour le bouton de mot de passe personnel, maintenant visible */
+        /* Styles pour le bouton de mot de passe personnel */
         .personal-password-button {
             position: relative; z-index: 1; padding: 0.75rem 2rem;
             border-radius: 9999px; /* rounded-full */
@@ -264,7 +261,7 @@
             box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
         }
 
-        /* Styles pour la fenêtre de prix et de signalement */
+        /* Styles pour les modaux de prix et de signalement */
         .pricing-modal, .report-modal, .robot-check-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
@@ -275,7 +272,7 @@
             opacity: 1;
             pointer-events: auto;
         }
-        /* S'assure que le contenu du modal est scrollable sur les petits écrans */
+        /* Conteneur de contenu des modaux */
         .modal-content-container {
             background-color: rgba(30, 41, 59, 0.9);
             border: 1px solid rgba(71, 85, 105, 0.5);
@@ -284,10 +281,10 @@
             position: relative;
             transform: translateY(0);
             transition: all 0.3s ease-in-out;
-            max-width: 42rem; /* max-w-2xl */
-            width: calc(100% - 2rem); /* w-full, with some margin */
-            max-height: calc(100vh - 4rem); /* Hauteur max pour permettre le défilement */
-            overflow-y: auto; /* Permet le défilement si le contenu est trop grand */
+            max-width: 42rem;
+            width: calc(100% - 2rem);
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
             margin: 2rem;
             padding: 2rem;
         }
@@ -306,7 +303,7 @@
             position: relative;
             transform: translateY(0);
             transition: all 0.3s ease-in-out;
-            padding: 1.5rem; /* Ajustement du padding */
+            padding: 1.5rem;
         }
         .pricing-card:hover {
             transform: translateY(-5px);
@@ -348,11 +345,11 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
-        /* NOUVEAU: Styles pour les boutons Like/Dislike */
+        /* Boutons J'aime/Je n'aime pas */
         .rating-container {
-            background: rgba(30, 41, 59, 0.7); /* gray-800 avec transparence */
+            background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(71, 85, 105, 0.5); /* gray-700 avec transparence */
+            border: 1px solid rgba(71, 85, 105, 0.5);
             display: inline-flex;
             gap: 1.5rem;
             padding: 0.75rem 2rem;
@@ -363,7 +360,7 @@
         .rating-button {
             background: transparent;
             border: none;
-            color: #d1d5db; /* gray-400 */
+            color: #d1d5db;
             font-size: 1.25rem;
             cursor: pointer;
             transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
@@ -387,7 +384,7 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
 
-    <!-- Écran de chargement -->
+    <!-- Écran de chargement, masqué avec une transition pour un effet fluide -->
     <div id="loader-screen">
         <div class="loader-container">
             <div class="loader-shape"></div>
@@ -397,20 +394,18 @@
         </div>
     </div>
 
-    <!-- Modal de message customisé pour remplacer l'alerte -->
+    <!-- Modal de message customisé pour remplacer alert() -->
     <div id="messageBox" class="message-box bg-red-600"></div>
 
     <!-- Header stylisé -->
     <header id="mainHeader" class="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-gray-700 opacity-0">
         <div class="container mx-auto px-6 py-4 relative">
             <div class="flex flex-col items-center justify-center space-y-1">
-                <!-- Le titre utilise les classes pour le style épuré et l'animation de couleur -->
                 <h1 id="shadowTitle" class="text-4xl md:text-5xl font-black tracking-wider header-title header-title-animation font-['Inter']" style="color: rgb(var(--custom-red));">
                     SHADOW
                 </h1>
                 <p id="headerSubtitle" class="text-lg md:text-xl text-gray-400 font-medium overflow-hidden whitespace-nowrap opacity-0"></p>
             </div>
-            <!-- Bouton de personnalisation -->
             <button id="customizationButton" class="customization-button">
                 <i class="fas fa-sliders-h"></i>
             </button>
@@ -426,7 +421,6 @@
             <h2 class="text-2xl font-bold">Personnalisation</h2>
             
             <div class="space-y-4">
-                <!-- Section pour la couleur d'accent -->
                 <div>
                     <h3 class="text-lg font-semibold">Couleur d'accent</h3>
                     <div class="mt-2 flex items-center justify-between">
@@ -435,7 +429,6 @@
                     </div>
                 </div>
 
-                <!-- Section pour la taille du texte -->
                 <div>
                     <h3 class="text-lg font-semibold">Taille du texte</h3>
                     <div class="mt-2 space-y-2">
@@ -451,7 +444,6 @@
                     </div>
                 </div>
 
-                <!-- Option pour masquer les infos du film -->
                 <div>
                     <h3 class="text-lg font-semibold">Affichage</h3>
                     <div class="mt-2 flex items-center justify-between">
@@ -460,7 +452,6 @@
                     </div>
                 </div>
 
-                <!-- NOUVELLE SECTION: Personnalisation du fond d'écran -->
                 <div>
                     <h3 class="text-lg font-semibold">Fond d'écran</h3>
                     <div class="mt-2 space-y-2">
@@ -468,6 +459,9 @@
                             Choisir une image
                         </label>
                         <input type="file" id="backgroundImageInput" class="hidden" accept="image/*">
+                        <button id="resetBackgroundBtn" class="w-full text-center py-2 px-4 rounded-lg bg-red-800 hover:bg-red-700 transition">
+                            Fond par défaut
+                        </button>
                         <div id="backgroundPreviewContainer" class="hidden flex items-center justify-between gap-2 p-2 bg-gray-800 rounded-lg">
                             <img id="backgroundPreview" class="w-16 h-16 object-cover rounded-lg">
                             <button id="resetBackgroundBtn" class="p-2 text-gray-400 hover:text-red-500 transition">
@@ -480,9 +474,9 @@
         </div>
     </div>
 
-    <!-- Main Container -->
+    <!-- Conteneur principal -->
     <main id="mainContent" class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-12 opacity-0">
-        <!-- Movie Info, maintenant dans un conteneur qui peut être masqué -->
+        <!-- Informations sur le film -->
         <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
             <div class="space-y-2">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
@@ -495,11 +489,10 @@
                     Découvrez une expérience de streaming ultime avec une qualité premium et une lecture fluide.
                 </p>
             </div>
-            <!-- La couleur de la barre de progression est maintenant dynamique -->
             <div id="movieInfoDivider" class="w-16 sm:w-24 h-1 bg-gradient-to-r from-transparent to-transparent mx-auto rounded-full" style="background-image: linear-gradient(to right, transparent, rgb(var(--custom-red)), transparent);"></div>
         </div>
 
-        <!-- Video Player -->
+        <!-- Lecteur vidéo -->
         <div class="w-full max-w-6xl mx-auto scale-in">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
                 <div class="aspect-video w-full relative bg-black">
@@ -514,12 +507,10 @@
                     ></iframe>
                 </div>
                 
-                <!-- Password Overlay - Améliorée pour être parfaite et responsive -->
+                <!-- Superposition du mot de passe -->
                 <div id="passwordOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 smooth-transition opacity-100 z-10">
-                    <!-- max-h-full et overflow-y-auto pour que le contenu puisse défiler si besoin -->
                     <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50 max-h-full overflow-y-auto">
                         <div class="text-center space-y-1">
-                            <!-- Le cadenas est dynamique -->
                             <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
                                 <i class="fa-solid fa-lock text-xl accent-text"></i>
                             </div>
@@ -535,11 +526,9 @@
                                     id="passwordInput"
                                     class="form-input w-full h-10 px-4 rounded-lg bg-gray-800 text-white"
                                 />
-                                <!-- Le message d'erreur est dynamique -->
                                 <p id="errorMessage" class="text-sm hidden accent-text"></p>
                             </div>
 
-                            <!-- Le bouton de vérification du mot de passe est maintenant dynamique -->
                             <button type="submit" id="submitButton" class="w-full h-10 px-4 rounded-lg password-submit-button">
                                 Accéder au stream
                             </button>
@@ -554,16 +543,15 @@
                 </div>
             </div>
             
-            <!-- Streaming Status -->
+            <!-- État du streaming -->
             <div id="streamingStatus" class="mt-6 text-center hidden">
                 <div class="inline-flex items-center gap-2 px-4 py-2 border rounded-full smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
-                    <!-- L'icône de statut est maintenant dynamique -->
                     <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
                     <span class="text-sm font-medium accent-text">Streaming en cours</span>
                 </div>
             </div>
 
-            <!-- NOUVEAU: Boutons J'aime/Je n'aime pas -->
+            <!-- Boutons J'aime/Je n'aime pas -->
             <div class="mt-8 flex justify-center fade-in-up">
                 <div class="rating-container">
                     <button id="likeButton" class="rating-button" title="J'aime">
@@ -577,7 +565,7 @@
         </div>
     </main>
     
-    <!-- Footer -->
+    <!-- Pied de page -->
     <footer id="mainFooter" class="text-center py-8 border-t border-gray-700/30 opacity-0">
         <div class="container mx-auto px-6">
             <div class="space-y-4">
@@ -588,18 +576,15 @@
                 <div class="text-xs text-gray-400 space-y-1">
                     <p>Expérience de streaming premium</p>
                     <div class="flex items-center justify-center gap-1">
-                        <!-- Les points sont maintenant dynamiques -->
                         <div class="w-1 h-1 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
                         <span>Sécurisé • Rapide • Fiable</span>
                         <div class="w-1 h-1 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
                     </div>
                 </div>
-                <!-- Boutons du pied de page -->
                 <div class="flex justify-center gap-4 flex-wrap">
                     <button id="getPasswordButton" class="personal-password-button">
-                        Get your personal password
+                        Obtenir mon mot de passe
                     </button>
-                    <!-- Nouveau bouton de signalement -->
                     <button id="reportButton" class="report-button">
                         Signaler un problème
                     </button>
@@ -635,7 +620,7 @@
                     </button>
                 </div>
                 
-                <!-- Plan 2: Popular (Dynamic color) -->
+                <!-- Plan 2: Premium (Dynamic color) -->
                 <div class="pricing-card pricing-card-popular p-6 flex flex-col items-center text-center">
                     <div class="pricing-popular-badge">Popular</div>
                     <h3 class="text-2xl font-bold mb-2">Premium</h3>
@@ -721,15 +706,17 @@
         // Logique de validation du mot de passe
         const validPasswords = ["97", "98", "99"];
         
-        // NOUVEAU: Constantes pour la vérification robot
+        // Constantes pour la vérification robot
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
         const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
-        // NOUVEAU: Constantes pour le système de notation
+        // Constantes pour le système de notation
         const RATING_EXPIRATION_MS = 24 * 60 * 60 * 1000;
         const MOVIE_ID = 'Diablo'; // ID unique pour ce film
-
         
+        // URL de l'image de fond par défaut
+        const DEFAULT_BACKGROUND_URL = 'https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg';
+
         // Cache des éléments du DOM pour un accès plus rapide et moins de requêtes
         const dom = {
             passwordOverlay: document.getElementById('passwordOverlay'),
@@ -770,7 +757,6 @@
             backgroundPreviewContainer: document.getElementById('backgroundPreviewContainer'),
             backgroundPreview: document.getElementById('backgroundPreview'),
             resetBackgroundBtn: document.getElementById('resetBackgroundBtn'),
-            // NOUVEAUX ÉLÉMENTS DU DOM pour le système de notation
             likeButton: document.getElementById('likeButton'),
             dislikeButton: document.getElementById('dislikeButton'),
         };
@@ -779,9 +765,9 @@
         let baseFontSize = 16;
         let currentTextSize = 100;
         let currentAccentColor = '#DC2626';
-        let subtitleText = 'Le futur du divertissement';
+        const subtitleText = 'Le futur du divertissement';
         
-        // Fonction pour afficher un message temporaire (maintenant encore plus optimisée)
+        // Fonction pour afficher un message temporaire
         function showMessage(message, isError = false) {
             try {
                 dom.messageBox.textContent = message;
@@ -806,7 +792,7 @@
             return result ? `${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(result[3], 16)}` : null;
         }
 
-        // Fonction pour sauvegarder les paramètres dans le local storage (utilisée moins souvent)
+        // Fonction pour sauvegarder les paramètres dans le local storage
         function saveSettings() {
             try {
                 const settings = {
@@ -814,7 +800,6 @@
                     movieInfoVisible: !dom.movieInfoContainer.classList.contains('hidden'),
                     autoTextSize: dom.autoTextSizeToggle.checked,
                     textSize: currentTextSize,
-                    backgroundImage: localStorage.getItem('shadowBackground') // Sauvegarder l'image si elle existe
                 };
                 localStorage.setItem('shadowSettings', JSON.stringify(settings));
             } catch (e) {
@@ -822,33 +807,26 @@
             }
         }
         
-        // Fonction pour mettre à jour toutes les couleurs dynamiques (un seul point d'entrée pour la performance)
+        // Fonction pour mettre à jour toutes les couleurs dynamiques
         function updateDynamicColors() {
             try {
                 const rgbColor = hexToRgb(currentAccentColor);
                 document.documentElement.style.setProperty('--custom-red', rgbColor);
-                
                 dom.movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
-                
                 document.querySelectorAll('.loader-shape').forEach(shape => shape.style.borderColor = currentAccentColor);
                 document.querySelector('.loader-center-glow').style.backgroundColor = currentAccentColor;
                 document.querySelector('.loader-center-glow').style.boxShadow = `0 0 20px ${currentAccentColor}`;
-                
                 dom.pricingPopularBadge.style.backgroundColor = currentAccentColor;
                 dom.pricingPopularCard.style.borderColor = currentAccentColor;
                 dom.pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
-                
                 document.querySelectorAll('.accent-text').forEach(el => el.style.color = currentAccentColor);
                 document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = `rgba(${rgbColor}, 0.1)`);
                 document.querySelectorAll('.accent-border').forEach(el => el.style.borderColor = currentAccentColor);
                 dom.shadowTitle.style.color = currentAccentColor;
                 dom.submitButton.style.backgroundColor = currentAccentColor;
                 dom.submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
-                
-                // Mettre à jour la couleur des boutons dynamiques
                 dom.reportSubmitButton.style.backgroundColor = currentAccentColor;
                 dom.robotSubmitButton.style.backgroundColor = currentAccentColor;
-
             } catch (e) {
                 console.error("Erreur lors de la mise à jour des couleurs :", e);
             }
@@ -858,41 +836,30 @@
         function applySettings() {
             try {
                 const settings = JSON.parse(localStorage.getItem('shadowSettings'));
-                if (!settings) {
-                    saveSettings();
-                    return;
+                if (settings) {
+                    currentAccentColor = settings.accentColor;
+                    dom.accentColorPicker.value = currentAccentColor;
+                    updateDynamicColors();
+                    if (settings.movieInfoVisible) {
+                        dom.movieInfoContainer.classList.remove('hidden');
+                        dom.toggleMovieInfo.checked = true;
+                    } else {
+                        dom.movieInfoContainer.classList.add('hidden');
+                        dom.toggleMovieInfo.checked = false;
+                    }
+                    dom.autoTextSizeToggle.checked = settings.autoTextSize;
+                    if (settings.autoTextSize) {
+                        enableAutoTextSize();
+                    } else {
+                        currentTextSize = settings.textSize;
+                        document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
+                        dom.textSizeValue.textContent = `${currentTextSize}%`;
+                        disableAutoTextSize();
+                    }
                 }
-
-                currentAccentColor = settings.accentColor;
-                dom.accentColorPicker.value = currentAccentColor;
-                updateDynamicColors();
-                
-                if (settings.movieInfoVisible) {
-                    dom.movieInfoContainer.classList.remove('hidden');
-                    dom.toggleMovieInfo.checked = true;
-                } else {
-                    dom.movieInfoContainer.classList.add('hidden');
-                    dom.toggleMovieInfo.checked = false;
-                }
-
-                dom.autoTextSizeToggle.checked = settings.autoTextSize;
-                if (settings.autoTextSize) {
-                    enableAutoTextSize();
-                } else {
-                    currentTextSize = settings.textSize;
-                    document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                    dom.textSizeValue.textContent = `${currentTextSize}%`;
-                    disableAutoTextSize();
-                }
-
-                // NOUVEAU : Appliquer l'image de fond sauvegardée
                 const savedImage = localStorage.getItem('shadowBackground');
-                if (savedImage) {
-                    document.body.style.backgroundImage = `url(${savedImage})`;
-                    dom.backgroundPreview.src = savedImage;
-                    dom.backgroundPreviewContainer.classList.remove('hidden');
-                }
-
+                const backgroundImage = savedImage || DEFAULT_BACKGROUND_URL;
+                document.body.style.backgroundImage = `url(${backgroundImage})`;
             } catch (e) {
                 console.error("Erreur lors de l'application des paramètres :", e);
             }
@@ -906,7 +873,7 @@
             if (width < 640) { newSize = 80; }
             else if (width < 1024) { newSize = 90; }
             else { newSize = 100; }
-            currentTextSize = newSize; // Mettre à jour la variable
+            currentTextSize = newSize;
             document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * newSize) / 100}px`);
         }
         
@@ -931,7 +898,6 @@
             try {
                 const lastAccess = localStorage.getItem('shadowAccess');
                 const threeHours = 3 * 60 * 60 * 1000;
-
                 if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
                     dom.passwordOverlay.classList.remove('hidden', 'opacity-0');
                     isAuthenticated = false;
@@ -950,11 +916,9 @@
         function startStreaming() {
             dom.passwordOverlay.classList.remove('opacity-100');
             dom.passwordOverlay.classList.add('opacity-0');
-
             dom.passwordOverlay.addEventListener('transitionend', () => {
                 dom.passwordOverlay.classList.add('hidden');
             }, { once: true });
-            
             dom.streamingStatus.classList.remove('hidden');
             isAuthenticated = true;
             showMessage("Accès accordé !", false);
@@ -963,7 +927,6 @@
         async function handlePasswordSubmit(event) {
             event.preventDefault();
             const password = dom.passwordInput.value.trim();
-
             if (!password) {
                 dom.errorMessage.textContent = 'Veuillez entrer un mot de passe.';
                 dom.errorMessage.classList.remove('hidden');
@@ -972,31 +935,22 @@
             
             const originalButtonText = dom.submitButton.innerHTML;
             const originalButtonClasses = dom.submitButton.className;
-
             dom.submitButton.classList.add('loading-button');
             dom.submitButton.innerHTML = `<span class="relative z-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vérification...</span>`;
             dom.submitButton.disabled = true;
             dom.errorMessage.classList.add('hidden');
-
             await new Promise(resolve => setTimeout(resolve, 2000));
-
             dom.submitButton.classList.remove('loading-button');
 
             if (validPasswords.includes(password.toUpperCase())) {
                 localStorage.setItem('shadowAccess', Date.now().toString());
-
-                // NOUVEAU: Vérifier si la vérification robot est nécessaire
                 const lastRobotCheck = localStorage.getItem(LAST_ROBOT_CHECK_KEY);
-                
                 if (!lastRobotCheck || Date.now() - parseInt(lastRobotCheck) > ONE_WEEK_IN_MS) {
-                    // Cacher la fenêtre du mot de passe en douceur avant d'ouvrir la suivante
                     dom.passwordOverlay.classList.add('hidden');
                     openRobotCheckModal();
                 } else {
-                    // Si la vérification est à jour, on passe directement au streaming
                     startStreaming();
                 }
-
             } else {
                 dom.errorMessage.textContent = 'Mot de passe invalide. Accès refusé.';
                 dom.errorMessage.classList.remove('hidden');
@@ -1038,34 +992,29 @@
         }
         function closeReportModal() {
             dom.reportModal.classList.remove('show');
-            dom.reportForm.reset(); // Réinitialise le formulaire à la fermeture
-            dom.reportSubmitButton.innerHTML = "Envoyer le rapport"; // Réinitialise le texte du bouton
+            dom.reportForm.reset();
+            dom.reportSubmitButton.innerHTML = "Envoyer le rapport";
             dom.reportSubmitButton.disabled = false;
         }
         
         async function handleReportSubmit(event) {
             event.preventDefault();
-            
             const originalButtonText = dom.reportSubmitButton.innerHTML;
             dom.reportSubmitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Envoi en cours...`;
             dom.reportSubmitButton.disabled = true;
-
-            // Simuler l'envoi pendant 3 secondes
             await new Promise(resolve => setTimeout(resolve, 3000));
-            
             dom.reportSubmitButton.innerHTML = originalButtonText;
             dom.reportSubmitButton.disabled = false;
-            
             closeReportModal();
             showMessage("Rapport envoyé avec succès. Merci !", false);
         }
         
-        // NOUVEAU: Fonctions pour le modal de vérification robot
+        // Fonctions pour le modal de vérification robot
         function openRobotCheckModal() {
             dom.robotCheckModal.classList.add('show');
             dom.robotCheckForm.classList.remove('hidden');
             dom.robotLoadingAnimation.classList.add('hidden');
-            dom.robotCheckbox.checked = false; // S'assurer que la case est décochée
+            dom.robotCheckbox.checked = false;
         }
         function closeRobotCheckModal() {
             dom.robotCheckModal.classList.remove('show');
@@ -1074,30 +1023,20 @@
 
         async function handleRobotCheckSubmit(event) {
             event.preventDefault();
-            
             if (!dom.robotCheckbox.checked) {
                 showMessage("Veuillez cocher la case de vérification.", true);
                 return;
             }
-            
-            // Masquer le formulaire et afficher l'animation de chargement
             dom.robotCheckForm.classList.add('hidden');
             dom.robotLoadingAnimation.classList.remove('hidden');
-
-            // Simuler la vérification pendant 5 secondes
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
-            // Masquer l'animation de chargement
             dom.robotLoadingAnimation.classList.add('hidden');
-            
-            // Stocker le timestamp de la vérification dans le local storage
             localStorage.setItem(LAST_ROBOT_CHECK_KEY, Date.now().toString());
-            
             closeRobotCheckModal();
             startStreaming();
         }
 
-        // NOUVEAU: Système de Like/Dislike
+        // Système de Like/Dislike
         function getRating() {
             const storedRating = localStorage.getItem(`shadow-${MOVIE_ID}-rating`);
             if (storedRating) {
@@ -1114,20 +1053,16 @@
         function setRating(ratingType) {
             const currentRating = getRating();
             const buttons = [dom.likeButton, dom.dislikeButton];
-
-            // Si on clique sur le même bouton, on annule la notation
             if (currentRating === ratingType) {
                 localStorage.removeItem(`shadow-${MOVIE_ID}-rating`);
                 buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
                 showMessage("Votre vote a été retiré.", false);
             } else {
-                // Sinon, on met à jour la notation
                 const data = {
                     type: ratingType,
                     timestamp: Date.now()
                 };
                 localStorage.setItem(`shadow-${MOVIE_ID}-rating`, JSON.stringify(data));
-                
                 buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
                 if (ratingType === 'like') {
                     dom.likeButton.classList.add('liked');
@@ -1148,7 +1083,7 @@
             }
         }
 
-        // Optimisation : Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
+        // Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
         function typeWriterEffect(element, text) {
             element.classList.remove('opacity-0');
             let index = 0;
@@ -1165,27 +1100,16 @@
         // Fonction pour gérer le démarrage de l'application
         function startApp() {
              try {
-                // Appliquer les paramètres sauvegardés avant le rendu
                 applySettings();
-
-                // Fait disparaître l'écran de chargement
                 dom.loaderScreen.classList.add('opacity-0');
-                
-                // Cache l'écran de chargement après la transition
                 setTimeout(() => {
                     dom.loaderScreen.style.display = 'none';
-                }, 1500); // 1.5s, soit la durée de la transition
-
-                // Affiche le reste du contenu
+                }, 1500);
                 dom.mainHeader.classList.remove('opacity-0');
                 dom.mainContent.classList.remove('opacity-0');
                 dom.mainFooter.classList.remove('opacity-0');
-                
-                // Déclenche l'animation du sous-titre
                 typeWriterEffect(dom.headerSubtitle, subtitleText);
                 checkAuthentication();
-                
-                // NOUVEAU: Applique l'état de notation initial
                 applyInitialRating();
             } catch (e) {
                 console.error("Erreur critique au démarrage de l'application :", e);
@@ -1194,19 +1118,16 @@
 
         // Événement d'écoute pour un chargement plus rapide
         window.addEventListener('load', () => {
-            // Démarrage direct de l'application pour une réactivité maximale
             startApp();
-        
             updateOnlineStatus();
-            // Mise en place d'un check périodique de l'authentification
-            setInterval(checkAuthentication, 60 * 1000); 
+            setInterval(checkAuthentication, 60 * 1000);
         });
 
         // Écouteurs d'événements pour le statut de la connexion
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
 
-        // Événements pour la personnalisation et la nouvelle fenêtre
+        // Événements pour la personnalisation et les nouvelles fenêtres
         dom.customizationButton.addEventListener('click', openCustomizationModal);
         dom.getPasswordButton.addEventListener('click', openPricingModal);
         dom.reportButton.addEventListener('click', openReportModal);
@@ -1255,7 +1176,7 @@
             saveSettings();
         });
 
-        // NOUVEAU: Événement pour le sélecteur d'image de fond
+        // Événement pour le sélecteur d'image de fond
         dom.backgroundImageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1273,21 +1194,18 @@
             }
         });
 
-        // NOUVEAU: Événement pour le bouton de réinitialisation de l'image de fond
+        // Événement pour le bouton de réinitialisation de l'image de fond
         dom.resetBackgroundBtn.addEventListener('click', () => {
-            document.body.style.backgroundImage = 'none';
-            dom.backgroundPreview.src = '';
-            dom.backgroundPreviewContainer.classList.add('hidden');
-            localStorage.removeItem('shadowBackground');
+            document.body.style.backgroundImage = `url(${DEFAULT_BACKGROUND_URL})`;
+            localStorage.setItem('shadowBackground', DEFAULT_BACKGROUND_URL);
             saveSettings();
             showMessage("Fond d'écran réinitialisé.", false);
         });
         
-        // NOUVEAU: Écouteurs d'événements pour les boutons de notation
+        // Écouteurs d'événements pour les boutons de notation
         dom.likeButton.addEventListener('click', () => setRating('like'));
         dom.dislikeButton.addEventListener('click', () => setRating('dislike'));
 
-        // 🔒 Anti-inspect & anti-clic droit
         // Attention : cette méthode n'est pas infaillible et peut être frustrante pour l'utilisateur
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {

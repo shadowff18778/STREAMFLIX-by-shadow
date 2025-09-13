@@ -142,43 +142,6 @@
             100% { box-shadow: 0 0 5px rgb(var(--custom-red)); opacity: 0.5; }
         }
 
-        /* Écran de chargement */
-        #loader-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: hsl(var(--shadow-dark)); display: flex;
-            align-items: center; justify-content: center; z-index: 1000;
-            opacity: 1; transition: opacity 1.5s ease-in-out;
-        }
-        .loader-container {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; position: relative;
-        }
-        .loader-shape {
-            width: 100px; height: 100px; border-radius: 50%;
-            border: 4px solid rgb(var(--custom-red));
-            animation: shapeRotate 3s infinite cubic-bezier(0.85, 0, 0.15, 1);
-            position: absolute; opacity: 0;
-        }
-        .loader-shape:nth-child(1) { transform: scale(0.6); animation-delay: 0s; }
-        .loader-shape:nth-child(2) { transform: scale(0.8); animation-delay: 0.5s; }
-        .loader-shape:nth-child(3) { transform: scale(1); animation-delay: 1s; }
-        .loader-center-glow {
-            width: 40px; height: 40px; border-radius: 50%;
-            background-color: rgb(var(--custom-red));
-            box-shadow: 0 0 20px rgb(var(--custom-red));
-            position: relative; z-index: 1; animation: pulseGlow 1.5s infinite;
-        }
-        @keyframes shapeRotate {
-            0% { transform: scale(0.6) rotate(0deg); opacity: 0; }
-            30% { transform: scale(1.2) rotate(180deg); opacity: 1; }
-            60% { transform: scale(0.8) rotate(360deg); opacity: 1; }
-            100% { transform: scale(0.6) rotate(540deg); opacity: 0; }
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgb(var(--custom-red)); }
-            50% { box-shadow: 0 0 40px rgb(var(--custom-red)); }
-        }
-
         /* keyframes pour l'animation d'entrée du modal */
         @keyframes modalEnter {
             from { opacity: 0; transform: scale(0.9); }
@@ -265,13 +228,13 @@
         }
 
         /* Styles pour les modaux de prix et de signalement */
-        .pricing-modal, .report-modal, .robot-check-modal {
+        .pricing-modal, .report-modal, .robot-check-modal, .offline-modal, .reconnecting-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
             z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
         }
-        .pricing-modal.show, .report-modal.show, .robot-check-modal.show {
+        .pricing-modal.show, .report-modal.show, .robot-check-modal.show, .offline-modal.show, .reconnecting-modal.show {
             opacity: 1;
             pointer-events: auto;
         }
@@ -483,7 +446,7 @@
         <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
             <div class="space-y-2">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
-                    Shadow Force
+                    Shadow Force 
                 </h2>
                 <p class="text-base sm:text-lg text-gray-400">
                     Date de sortie: 2025
@@ -499,15 +462,7 @@
         <div class="w-full max-w-6xl mx-auto scale-in">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
                 <div class="aspect-video w-full relative bg-black">
-                    <iframe
-                        id="mainVideo"
-                        src="https://hglink.to/ws90l65qwoju"
-                        class="absolute inset-0 w-full h-full border-none"
-                        allowfullscreen
-                        title="Diablo - Shadow Streaming"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        style="transform: scale(1.01); transform-origin: center;"
-                    ></iframe>
+                    <iframe width="560" height="315" src="//sendvid.com/embed/pszeqxv2" frameborder="0" allowfullscreen class="absolute inset-0 w-full h-full border-none" title="Diablo - Shadow Streaming" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="transform: scale(1.01); transform-origin: center;"></iframe>
                 </div>
                 
                 <!-- Superposition du mot de passe -->
@@ -565,6 +520,17 @@
                     </button>
                 </div>
             </div>
+            
+            <!-- Message de mise à jour -->
+            <div id="updateMessageContainer" class="mt-8 text-center hidden fade-in-up">
+                <div class="inline-flex items-center gap-2 p-4 rounded-lg border border-gray-700 smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
+                    <i class="fa-solid fa-spinner fa-spin text-xl accent-text"></i>
+                    <p class="font-medium text-gray-300">
+                        Le streaming sera mis à jour dans quelques instants. Merci de patienter.
+                    </p>
+                </div>
+            </div>
+
         </div>
     </main>
     
@@ -705,9 +671,28 @@
         </div>
     </div>
 
+    <!-- Modal pour l'état de la connexion (Offline) -->
+    <div id="offlineModal" class="offline-modal">
+        <div class="modal-content-container max-w-md text-center p-8 space-y-6">
+            <i class="fa-solid fa-wifi-slash text-6xl accent-text"></i>
+            <h2 class="text-3xl font-bold">Connexion perdue</h2>
+            <p class="text-gray-400">
+                Vous n'êtes pas connecté à Internet. Vérifiez votre connexion et le site se mettra à jour automatiquement.
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal de reconnexion -->
+    <div id="reconnectingModal" class="reconnecting-modal">
+        <div class="modal-content-container max-w-xs text-center p-8 space-y-6">
+            <div class="w-16 h-16 mx-auto border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
+            <h2 class="text-xl font-bold">Reconnexion en cours...</h2>
+        </div>
+    </div>
+
     <script>
         // Logique de validation du mot de passe
-        const validPasswords = ["ORGITO", "ELDI", "VISI"];
+        const validPasswords = ["ELDI", "ERVIS", "ORGITO"];
         
         // Constantes pour la vérification robot
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
@@ -762,6 +747,8 @@
             resetBackgroundBtn: document.getElementById('resetBackgroundBtn'),
             likeButton: document.getElementById('likeButton'),
             dislikeButton: document.getElementById('dislikeButton'),
+            offlineModal: document.getElementById('offlineModal'),
+            reconnectingModal: document.getElementById('reconnectingModal'),
         };
 
         let isAuthenticated = false;
@@ -967,8 +954,16 @@
 
         // Détection de l'état de la connexion (amélioration de l'alerte par un modal)
         function updateOnlineStatus() {
-            if (!navigator.onLine) {
-                showMessage('Vous êtes actuellement hors ligne. Certaines fonctionnalités peuvent ne pas fonctionner.', true);
+            if (navigator.onLine) {
+                dom.offlineModal.classList.remove('show');
+                dom.reconnectingModal.classList.add('show');
+                setTimeout(() => {
+                    dom.reconnectingModal.classList.remove('show');
+                    showMessage("Connexion rétablie ! Le site est à jour.", false);
+                }, 5000); // 5 secondes
+            } else {
+                dom.offlineModal.classList.add('show');
+                dom.reconnectingModal.classList.remove('show');
             }
         }
         
@@ -1114,6 +1109,7 @@
                 typeWriterEffect(dom.headerSubtitle, subtitleText);
                 checkAuthentication();
                 applyInitialRating();
+                updateOnlineStatus(); // Check the initial status
             } catch (e) {
                 console.error("Erreur critique au démarrage de l'application :", e);
             }
@@ -1122,7 +1118,6 @@
         // Événement d'écoute pour un chargement plus rapide
         window.addEventListener('load', () => {
             startApp();
-            updateOnlineStatus();
             setInterval(checkAuthentication, 60 * 1000);
         });
 

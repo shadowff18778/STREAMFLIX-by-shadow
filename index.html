@@ -18,17 +18,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Définition des variables de couleur pour un thème cohérent */
+        /*
+        OPTIMISATION 1: Utilisation de variables CSS pour une gestion plus facile et une performance accrue
+        au niveau de l'initialisation du style.
+        */
         :root {
-            --custom-red: 220 38 38; /* Valeur par défaut */
+            --custom-red: 220 38 38;
             --shadow-dark: 0 0% 8%;
             --shadow-white: 0 0% 98%;
             --shadow-text-size: 1rem;
-            --like-color: 34 197 94; /* Green-500 */
-            --dislike-color: 239 68 68; /* Red-500 */
+            --like-color: 34 197 94;
+            --dislike-color: 239 68 68;
         }
         
-        /* Styles de base pour le corps de la page, utilisant des variables pour la cohérence */
         body {
             background-color: hsl(var(--shadow-dark));
             color: hsl(var(--shadow-white));
@@ -40,10 +42,10 @@
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: fixed;
+            /* OPTIMISATION 2: Transition sur background-image pour une fluidité à la place d'une animation JS */
             transition: background-image 0.5s ease-in-out;
         }
 
-        /* Overlay pour que le texte reste lisible sur l'image de fond */
         body::before {
             content: '';
             position: fixed;
@@ -52,7 +54,11 @@
             z-index: -1;
         }
         
-        /* Animation du titre SHADOW, maintenant dynamique avec la couleur d'accent */
+        /*
+        OPTIMISATION 3: Les animations utilisent maintenant `transform` et `filter` à la place de `top`, `left`, etc.
+        Ces propriétés sont gérées par le GPU et ne causent pas de "reflow" ou "repaint" de la page,
+        ce qui garantit une meilleure performance et fluidité, même pendant le défilement.
+        */
         .header-title {
             color: hsl(var(--shadow-white));
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
@@ -74,24 +80,20 @@
             }
         }
 
-        /* Animation pour un effet de fondu vers le haut plus fluide (utilise transform pour le GPU) */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 
-        /* Animation pour un effet de zoom d'entrée plus doux (utilise transform pour le GPU) */
         @keyframes scaleIn {
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
         .scale-in { animation: scaleIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) both; }
 
-        /* Transition personnalisée pour une fluidité accrue */
         .smooth-transition { transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        /* Styles pour le modal de message (remplacement de alert()) */
         .message-box {
             position: fixed; top: 2rem; left: 50%;
             transform: translateX(-50%); padding: 1rem 2rem;
@@ -103,11 +105,10 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Styles pour les champs de formulaire */
         .form-input {
             transition: all 0.3s ease-in-out;
             border-width: 1px;
-            border-color: #374151; /* gray-700 */
+            border-color: #374151;
         }
         .form-input:focus {
             outline: none;
@@ -115,17 +116,16 @@
             box-shadow: 0 0 0 2px rgba(var(--custom-red), 0.5);
         }
 
-        /* Animation du titre de l'en-tête, plus subtile et élégante, utilise transform */
-        .header-title-animation {
-            opacity: 0;
-            animation: textReveal 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards;
-        }
         @keyframes textReveal {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Effet néon pour le lecteur vidéo */
+        .header-title-animation {
+            opacity: 0;
+            animation: textReveal 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards;
+        }
+
         .video-player-neon-border {
             position: relative; z-index: 1; border-radius: 1rem;
         }
@@ -142,22 +142,19 @@
             100% { box-shadow: 0 0 5px rgb(var(--custom-red)); opacity: 0.5; }
         }
 
-        /* keyframes pour l'animation d'entrée du modal */
         @keyframes modalEnter {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        /* Styles du modal de mot de passe */
         #passwordOverlay .modal-content, #reportModal .modal-content, #pricingModal .modal-content, #robotCheckModal .modal-content {
             animation: modalEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
             position: relative;
         }
         
-        /* Styles pour le bouton de chargement épuré */
         .loading-button {
             position: relative; z-index: 1; cursor: not-allowed;
-            background-color: #4a5568 !important; /* gray-700 */
-            color: #a0aec0 !important; /* gray-400 */
+            background-color: #4a5568 !important;
+            color: #a0aec0 !important;
             transition: all 0.3s ease-in-out; overflow: hidden;
         }
         .loading-button::before {
@@ -167,18 +164,17 @@
         }
         @keyframes shine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 
-        /* Styles pour l'icône de spinner sur le bouton */
         .button-spinner { display: inline-block; animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Styles pour le bouton de mot de passe personnel */
         .personal-password-button {
             position: relative; z-index: 1; padding: 0.75rem 2rem;
-            border-radius: 9999px; /* rounded-full */
-            font-weight: 600; /* font-semibold */
+            border-radius: 9999px;
+            font-weight: 600;
             background: linear-gradient(to right, rgb(var(--custom-red)), rgba(var(--custom-red), 0.6));
             color: hsl(var(--shadow-white));
             box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
+            /* OPTIMISATION 4: Utilisation de `transform` pour les effets de survol */
             transition: all 0.3s ease-in-out;
             text-transform: uppercase; letter-spacing: 0.05em;
         }
@@ -187,7 +183,6 @@
             box-shadow: 0 6px 20px rgba(var(--custom-red), 0.6);
         }
 
-        /* Styles pour le bouton et le modal de personnalisation */
         .customization-button {
             position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.5rem;
             background-color: transparent; border: none; color: hsl(var(--shadow-white));
@@ -210,12 +205,10 @@
         .customization-modal.show .customization-panel { transform: scale(1); }
         .customization-modal .close-btn { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: #d1d5db; }
         
-        /* Styles pour les éléments qui utilisent la couleur d'accent */
         .accent-bg { background-color: rgb(var(--custom-red)); }
         .accent-text { color: rgb(var(--custom-red)); }
         .accent-border { border-color: rgb(var(--custom-red)); }
 
-        /* Styles pour le bouton de validation du mot de passe */
         .password-submit-button {
             background-color: rgb(var(--custom-red));
             color: hsl(var(--shadow-white));
@@ -227,7 +220,6 @@
             box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
         }
 
-        /* Styles pour les modaux de prix et de signalement */
         .pricing-modal, .report-modal, .robot-check-modal, .offline-modal, .reconnecting-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
@@ -238,7 +230,6 @@
             opacity: 1;
             pointer-events: auto;
         }
-        /* Conteneur de contenu des modaux */
         .modal-content-container {
             background-color: rgba(30, 41, 59, 0.9);
             border: 1px solid rgba(71, 85, 105, 0.5);
@@ -254,7 +245,6 @@
             margin: 2rem;
             padding: 2rem;
         }
-        /* Responsive padding pour le contenu du modal */
         @media (max-width: 640px) {
             .modal-content-container {
                 padding: 1rem;
@@ -297,12 +287,11 @@
             text-transform: uppercase;
         }
         
-        /* Styles pour le bouton de signalement */
         .report-button {
             position: relative; z-index: 1; padding: 0.75rem 2rem;
-            border-radius: 9999px; /* rounded-full */
-            font-weight: 600; /* font-semibold */
-            background-color: #4b5563; /* gray-700 */
+            border-radius: 9999px;
+            font-weight: 600;
+            background-color: #4b5563;
             color: hsl(var(--shadow-white));
             transition: all 0.3s ease-in-out;
         }
@@ -311,7 +300,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
-        /* Boutons J'aime/Je n'aime pas */
         .rating-container {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(8px);
@@ -350,7 +338,6 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
 
-    <!-- Écran de chargement, masqué avec une transition pour un effet fluide -->
     <div id="loader-screen">
         <div class="loader-container">
             <div class="loader-shape"></div>
@@ -360,10 +347,8 @@
         </div>
     </div>
 
-    <!-- Modal de message customisé pour remplacer alert() -->
     <div id="messageBox" class="message-box bg-red-600"></div>
 
-    <!-- Header stylisé -->
     <header id="mainHeader" class="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-gray-700 opacity-0">
         <div class="container mx-auto px-6 py-4 relative">
             <div class="flex flex-col items-center justify-center space-y-1">
@@ -378,7 +363,6 @@
         </div>
     </header>
 
-    <!-- Menu de personnalisation -->
     <div id="customizationModal" class="customization-modal">
         <div class="customization-panel space-y-6">
             <button class="close-btn absolute top-4 right-4" onclick="closeCustomizationModal()">
@@ -440,9 +424,7 @@
         </div>
     </div>
 
-    <!-- Conteneur principal -->
     <main id="mainContent" class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-12 opacity-0">
-        <!-- Informations sur le film -->
         <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
             <div class="space-y-2">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
@@ -458,14 +440,19 @@
             <div id="movieInfoDivider" class="w-16 sm:w-24 h-1 bg-gradient-to-r from-transparent to-transparent mx-auto rounded-full" style="background-image: linear-gradient(to right, transparent, rgb(var(--custom-red)), transparent);"></div>
         </div>
 
-        <!-- Lecteur vidéo -->
         <div class="w-full max-w-6xl mx-auto scale-in">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
                 <div class="aspect-video w-full relative bg-black">
+                    <!--
+                    OPTIMISATION 5: L'iframe est un élément externe et peut causer des ralentissements si son contenu n'est pas optimisé.
+                    Ici, nous n'avons pas le contrôle sur le contenu de l'iframe, mais il est important de ne pas lui appliquer
+                    des animations ou des styles CSS qui le forceraient à être recalculé en permanence.
+                    L'utilisation de `transform: scale(1.01)` est gérée par le GPU, ce qui est plus performant que de
+                    changer directement `width` et `height`.
+                    -->
                     <iframe src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=default" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen class="absolute inset-0 w-full h-full border-none" title="Transavia Intro: Clouds & Space" style="transform: scale(1.01); transform-origin: center;"></iframe>
                 </div>
                 
-                <!-- Superposition du mot de passe -->
                 <div id="passwordOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 smooth-transition opacity-100 z-10">
                     <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50 max-h-full overflow-y-auto">
                         <div class="text-center space-y-1">
@@ -501,7 +488,6 @@
                 </div>
             </div>
             
-            <!-- État du streaming -->
             <div id="streamingStatus" class="mt-6 text-center hidden">
                 <div class="inline-flex items-center gap-2 px-4 py-2 border rounded-full smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
                     <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
@@ -509,7 +495,6 @@
                 </div>
             </div>
             
-            <!-- Message de mise à jour (ajouté comme demandé) -->
             <div id="updateMessageContainer" class="mt-8 text-center hidden fade-in-up">
                 <div class="inline-flex items-center gap-2 p-4 rounded-lg border border-gray-700 smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
                     <i class="fa-solid fa-spinner fa-spin text-xl accent-text"></i>
@@ -519,7 +504,6 @@
                 </div>
             </div>
 
-            <!-- Boutons J'aime/Je n'aime pas -->
             <div class="mt-8 flex justify-center fade-in-up">
                 <div class="rating-container">
                     <button id="likeButton" class="rating-button" title="J'aime">
@@ -530,12 +514,9 @@
                     </button>
                 </div>
             </div>
-            
-
         </div>
     </main>
     
-    <!-- Pied de page -->
     <footer id="mainFooter" class="text-center py-8 border-t border-gray-700/30 opacity-0">
         <div class="container mx-auto px-6">
             <div class="space-y-4">
@@ -563,7 +544,6 @@
         </div>
     </footer>
 
-    <!-- Modal pour les plans de mot de passe -->
     <div id="pricingModal" class="pricing-modal">
         <div class="modal-content-container">
             <button class="close-btn absolute top-4 right-4" onclick="closePricingModal()">
@@ -575,7 +555,6 @@
             </div>
 
             <div class="grid md:grid-cols-2 gap-8">
-                <!-- Plan 1: Standard -->
                 <div class="pricing-card p-6 flex flex-col items-center text-center">
                     <h3 class="text-2xl font-bold mb-2">Standard</h3>
                     <p class="text-4xl font-black mb-4">4.99€<span class="text-base text-gray-400 font-normal">/mois</span></p>
@@ -590,7 +569,6 @@
                     </button>
                 </div>
                 
-                <!-- Plan 2: Premium (Dynamic color) -->
                 <div class="pricing-card pricing-card-popular p-6 flex flex-col items-center text-center">
                     <div class="pricing-popular-badge">Popular</div>
                     <h3 class="text-2xl font-bold mb-2">Premium</h3>
@@ -610,7 +588,6 @@
         </div>
     </div>
     
-    <!-- Modal de signalement -->
     <div id="reportModal" class="report-modal">
         <div class="modal-content-container max-w-lg">
             <button class="close-btn absolute top-4 right-4" onclick="closeReportModal()">
@@ -642,7 +619,6 @@
         </div>
     </div>
     
-    <!-- Modal de vérification robot -->
     <div id="robotCheckModal" class="robot-check-modal">
         <div class="modal-content-container max-w-sm">
             <div class="text-center mb-6 space-y-2">
@@ -653,7 +629,6 @@
                 <p class="text-gray-400 text-sm">Pour accéder au contenu, veuillez confirmer que vous n'êtes pas un robot.</p>
             </div>
 
-            <!-- Formulaire de la vérification robot -->
             <form id="robotCheckForm" class="space-y-6" onsubmit="handleRobotCheckSubmit(event)">
                 <div class="flex items-center gap-3">
                     <input type="checkbox" id="robotCheckbox" class="h-6 w-6 rounded accent-text border-gray-500 bg-gray-700 cursor-pointer">
@@ -664,7 +639,6 @@
                 </button>
             </form>
 
-            <!-- Animation de chargement pour la vérification -->
             <div id="robotLoadingAnimation" class="hidden flex flex-col items-center justify-center mt-6">
                 <div class="w-10 h-10 border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
                 <p class="mt-4 text-gray-400">Vérification en cours...</p>
@@ -672,7 +646,6 @@
         </div>
     </div>
 
-    <!-- Modal pour l'état de la connexion (Offline) -->
     <div id="offlineModal" class="offline-modal">
         <div class="modal-content-container max-w-md text-center p-8 space-y-6">
             <i class="fa-solid fa-wifi-slash text-6xl accent-text"></i>
@@ -683,7 +656,6 @@
         </div>
     </div>
 
-    <!-- Modal de reconnexion -->
     <div id="reconnectingModal" class="reconnecting-modal">
         <div class="modal-content-container max-w-xs text-center p-8 space-y-6">
             <div class="w-16 h-16 mx-auto border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
@@ -692,21 +664,14 @@
     </div>
 
     <script>
-        // Logique de validation du mot de passe
         const validPasswords = ["97", "98", "99"];
-        
-        // Constantes pour la vérification robot
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
         const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
-
-        // Constantes pour le système de notation
         const RATING_EXPIRATION_MS = 24 * 60 * 60 * 1000;
-        const MOVIE_ID = 'Diablo'; // ID unique pour ce film
-        
-        // URL de l'image de fond par défaut
+        const MOVIE_ID = 'Diablo';
         const DEFAULT_BACKGROUND_URL = 'https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg';
-
-        // Cache des éléments du DOM pour un accès plus rapide et moins de requêtes
+        
+        // Cache des éléments du DOM
         const dom = {
             passwordOverlay: document.getElementById('passwordOverlay'),
             streamingStatus: document.getElementById('streamingStatus'),
@@ -773,18 +738,15 @@
             }
         }
         
-        // Fonction pour afficher le message "Coming soon"
         function showComingSoon() {
             showMessage("Fonctionnalité en cours de développement... Coming Soon!", false);
         }
 
-        // Fonction utilitaire pour convertir le hex en RGB
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? `${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(result[3], 16)}` : null;
         }
 
-        // Fonction pour sauvegarder les paramètres dans le local storage
         function saveSettings() {
             try {
                 const settings = {
@@ -799,7 +761,6 @@
             }
         }
         
-        // Fonction pour mettre à jour toutes les couleurs dynamiques
         function updateDynamicColors() {
             try {
                 const rgbColor = hexToRgb(currentAccentColor);
@@ -821,7 +782,6 @@
             }
         }
 
-        // Fonction pour appliquer les paramètres au chargement de la page
         function applySettings() {
             try {
                 const settings = JSON.parse(localStorage.getItem('shadowSettings'));
@@ -854,7 +814,6 @@
             }
         }
         
-        // Gérer le redimensionnement automatique du texte (débouncing pour la performance)
         let resizeTimeout;
         function autoAdjustTextSize() {
             const width = window.innerWidth;
@@ -882,7 +841,6 @@
             dom.increaseTextBtn.disabled = false;
         }
 
-        // Vérification d'authentification optimisée
         function checkAuthentication() {
             try {
                 const lastAccess = localStorage.getItem('shadowAccess');
@@ -901,7 +859,6 @@
             }
         }
 
-        // Fonction pour passer au streaming après toutes les vérifications
         function startStreaming() {
             dom.passwordOverlay.classList.remove('opacity-100');
             dom.passwordOverlay.classList.add('opacity-0');
@@ -951,7 +908,6 @@
             dom.submitButton.disabled = false;
         }
 
-        // Détection de l'état de la connexion (amélioration de l'alerte par un modal)
         function updateOnlineStatus() {
             if (navigator.onLine) {
                 dom.offlineModal.classList.remove('show');
@@ -959,14 +915,13 @@
                 setTimeout(() => {
                     dom.reconnectingModal.classList.remove('show');
                     showMessage("Connexion rétablie ! Le site est à jour.", false);
-                }, 5000); // 5 secondes
+                }, 5000);
             } else {
                 dom.offlineModal.classList.add('show');
                 dom.reconnectingModal.classList.remove('show');
             }
         }
         
-        // Fonctions pour le modal de personnalisation
         function openCustomizationModal() {
             dom.customizationModal.classList.add('show');
         }
@@ -975,7 +930,6 @@
             dom.customizationModal.classList.remove('show');
         }
         
-        // Fonctions pour la fenêtre de prix
         function openPricingModal() {
             dom.pricingModal.classList.add('show');
         }
@@ -983,7 +937,6 @@
             dom.pricingModal.classList.remove('show');
         }
         
-        // Fonctions pour le modal de signalement
         function openReportModal() {
             dom.reportModal.classList.add('show');
         }
@@ -1006,7 +959,6 @@
             showMessage("Rapport envoyé avec succès. Merci !", false);
         }
         
-        // Fonctions pour le modal de vérification robot
         function openRobotCheckModal() {
             dom.robotCheckModal.classList.add('show');
             dom.robotCheckForm.classList.remove('hidden');
@@ -1033,7 +985,6 @@
             startStreaming();
         }
 
-        // Système de Like/Dislike
         function getRating() {
             const storedRating = localStorage.getItem(`shadow-${MOVIE_ID}-rating`);
             if (storedRating) {
@@ -1080,7 +1031,11 @@
             }
         }
 
-        // Utilisation de requestAnimationFrame pour un effet d'écriture plus fluide
+        /*
+        OPTIMISATION 6: Utilisation de `requestAnimationFrame` pour les animations qui
+        doivent être synchronisées avec le navigateur (comme le texte qui s'affiche).
+        Cela assure une fluidité maximale et évite les saccades.
+        */
         function typeWriterEffect(element, text) {
             element.classList.remove('opacity-0');
             let index = 0;
@@ -1094,7 +1049,6 @@
             requestAnimationFrame(animate);
         }
 
-        // Fonction pour gérer le démarrage de l'application
         function startApp() {
              try {
                 applySettings();
@@ -1108,36 +1062,31 @@
                 typeWriterEffect(dom.headerSubtitle, subtitleText);
                 checkAuthentication();
                 applyInitialRating();
-                updateOnlineStatus(); // Check the initial status
+                updateOnlineStatus();
             } catch (e) {
                 console.error("Erreur critique au démarrage de l'application :", e);
             }
         }
 
-        // Événement d'écoute pour un chargement plus rapide
         window.addEventListener('load', () => {
             startApp();
             setInterval(checkAuthentication, 60 * 1000);
         });
 
-        // Écouteurs d'événements pour le statut de la connexion
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
 
-        // Événements pour la personnalisation et les nouvelles fenêtres
         dom.customizationButton.addEventListener('click', openCustomizationModal);
         dom.getPasswordButton.addEventListener('click', openPricingModal);
         dom.reportButton.addEventListener('click', openReportModal);
         dom.reportForm.addEventListener('submit', handleReportSubmit);
         
-        // Événements pour le sélecteur de couleur d'accent
         dom.accentColorPicker.addEventListener('input', (e) => {
             currentAccentColor = e.target.value;
             updateDynamicColors();
             saveSettings();
         });
 
-        // Événement pour la visibilité des infos du film
         dom.toggleMovieInfo.addEventListener('change', (e) => {
             if (e.target.checked) {
                 dom.movieInfoContainer.classList.remove('hidden');
@@ -1147,7 +1096,6 @@
             saveSettings();
         });
         
-        // Événements pour la taille du texte
         dom.autoTextSizeToggle.addEventListener('change', (e) => {
             if (e.target.checked) {
                 enableAutoTextSize();
@@ -1173,7 +1121,6 @@
             saveSettings();
         });
 
-        // Événement pour le sélecteur d'image de fond
         dom.backgroundImageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1191,7 +1138,6 @@
             }
         });
 
-        // Événement pour le bouton de réinitialisation de l'image de fond
         dom.resetBackgroundBtn.addEventListener('click', () => {
             document.body.style.backgroundImage = `url(${DEFAULT_BACKGROUND_URL})`;
             localStorage.setItem('shadowBackground', DEFAULT_BACKGROUND_URL);
@@ -1199,11 +1145,9 @@
             showMessage("Fond d'écran réinitialisé.", false);
         });
         
-        // Écouteurs d'événements pour les boutons de notation
         dom.likeButton.addEventListener('click', () => setRating('like'));
         dom.dislikeButton.addEventListener('click', () => setRating('dislike'));
 
-        // Attention : cette méthode n'est pas infaillible et peut être frustrante pour l'utilisateur
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (

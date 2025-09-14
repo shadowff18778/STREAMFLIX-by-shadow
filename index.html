@@ -146,7 +146,7 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-        #passwordOverlay .modal-content, #reportModal .modal-content, #pricingModal .modal-content, #robotCheckModal .modal-content {
+        #passwordOverlay .modal-content, #reportModal .modal-content, #pricingModal .modal-content, #robotCheckModal .modal-content, #downloadModal .modal-content, #shareModal .modal-content {
             animation: modalEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
             position: relative;
         }
@@ -220,13 +220,13 @@
             box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
         }
 
-        .pricing-modal, .report-modal, .robot-check-modal, .offline-modal, .reconnecting-modal {
+        .pricing-modal, .report-modal, .robot-check-modal, .offline-modal, .reconnecting-modal, .download-modal, .share-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center;
             z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
         }
-        .pricing-modal.show, .report-modal.show, .robot-check-modal.show, .offline-modal.show, .reconnecting-modal.show {
+        .pricing-modal.show, .report-modal.show, .robot-check-modal.show, .offline-modal.show, .reconnecting-modal.show, .download-modal.show, .share-modal.show {
             opacity: 1;
             pointer-events: auto;
         }
@@ -333,7 +333,51 @@
             text-shadow: 0 0 8px rgba(var(--dislike-color), 0.6);
             transform: scale(1.2);
         }
-
+        .download-share-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 20;
+        }
+        .download-share-button {
+            background-color: rgba(30, 41, 59, 0.8);
+            color: hsl(var(--shadow-white));
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 9999px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            font-size: 0.875rem;
+        }
+        .download-share-button:hover {
+            background-color: rgba(71, 85, 105, 0.8);
+            transform: translateY(-2px);
+        }
+        .download-share-button i {
+            margin-right: 0.5rem;
+        }
+        .share-app-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 0.75rem;
+            background-color: #27272a;
+            color: #d1d5db;
+            font-size: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .share-app-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .share-app-icon.twitter { background-color: #1da1f2; color: white; }
+        .share-app-icon.facebook { background-color: #1877f2; color: white; }
+        .share-app-icon.whatsapp { background-color: #25d366; color: white; }
+        .share-app-icon.telegram { background-color: #0088cc; color: white; }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
@@ -428,7 +472,7 @@
         <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
             <div class="space-y-2">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
-                    Diablo
+                    Shadow Force
                 </h2>
                 <p class="text-base sm:text-lg text-gray-400">
                     Date de sortie: 2025
@@ -443,16 +487,29 @@
         <div class="w-full max-w-6xl mx-auto scale-in">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
                 <div class="aspect-video w-full relative bg-black">
-                    <!--
-                    OPTIMISATION 5: L'iframe est un élément externe et peut causer des ralentissements si son contenu n'est pas optimisé.
-                    Ici, nous n'avons pas le contrôle sur le contenu de l'iframe, mais il est important de ne pas lui appliquer
-                    des animations ou des styles CSS qui le forceraient à être recalculé en permanence.
-                    L'utilisation de `transform: scale(1.01)` est gérée par le GPU, ce qui est plus performant que de
-                    changer directement `width` et `height`.
-                    -->
-                    <iframe src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=default" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen class="absolute inset-0 w-full h-full border-none" title="Transavia Intro: Clouds & Space" style="transform: scale(1.01); transform-origin: center;"></iframe>
+                    <!-- Mise à jour du lecteur vidéo avec le code d'intégration fourni par l'utilisateur -->
+                    <iframe 
+                        src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark" 
+                        width="100%"
+                        style="aspect-ratio: 16/9; width: 100%;"
+                        frameborder="0" 
+                        allow="autoplay; fullscreen" 
+                        allowfullscreen
+                        title="Transavia Intro: Clouds & Space" 
+                        class="absolute inset-0 w-full h-full border-none">
+                    </iframe>
                 </div>
                 
+                <!-- Boutons Télécharger et Partager ajoutés -->
+                <div class="download-share-container">
+                    <button id="downloadButton" class="download-share-button">
+                        <i class="fa-solid fa-download"></i> Télécharger
+                    </button>
+                    <button id="shareButton" class="download-share-button">
+                        <i class="fa-solid fa-share-alt"></i> Partager
+                    </button>
+                </div>
+
                 <div id="passwordOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 smooth-transition opacity-100 z-10">
                     <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50 max-h-full overflow-y-auto">
                         <div class="text-center space-y-1">
@@ -645,6 +702,79 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modale de Téléchargement -->
+    <div id="downloadModal" class="download-modal">
+        <div class="modal-content-container max-w-md">
+            <button class="close-btn absolute top-4 right-4" onclick="closeDownloadModal()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="text-center mb-8 space-y-2">
+                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-cloud-arrow-down text-xl accent-text"></i>
+                </div>
+                <h2 class="text-3xl font-bold">Télécharger en 2K</h2>
+                <p class="text-gray-400">
+                    Pour soutenir l'équipe et accéder au téléchargement en qualité 2K,
+                    un petit paiement est nécessaire.
+                </p>
+            </div>
+            <div class="text-center space-y-4">
+                <p class="text-5xl font-black accent-text">0.99€</p>
+                <button class="w-full h-12 rounded-lg password-submit-button" onclick="showComingSoon()">
+                    Payer et télécharger
+                </button>
+                <p class="text-xs text-gray-500">
+                    Paiement sécurisé. Votre soutien est précieux !
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale de Partage -->
+    <div id="shareModal" class="share-modal">
+        <div class="modal-content-container max-w-lg">
+            <button class="close-btn absolute top-4 right-4" onclick="closeShareModal()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="text-center mb-8 space-y-2">
+                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-share-nodes text-xl accent-text"></i>
+                </div>
+                <h2 class="text-3xl font-bold">Partager ce stream</h2>
+                <p class="text-gray-400">
+                    Partagez ce contenu avec vos amis !
+                </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <a href="#" id="shareTwitter" class="share-app-icon twitter" title="Partager sur Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" id="shareFacebook" class="share-app-icon facebook" title="Partager sur Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" id="shareWhatsapp" class="share-app-icon whatsapp" title="Partager sur WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="#" id="shareTelegram" class="share-app-icon telegram" title="Partager sur Telegram">
+                    <i class="fab fa-telegram-plane"></i>
+                </a>
+            </div>
+
+            <div class="mt-6 text-center space-y-2">
+                <p class="text-sm text-gray-400">
+                    Ou copiez le lien pour le partager où vous voulez :
+                </p>
+                <div class="flex gap-2">
+                    <input type="text" id="shareLinkInput" class="form-input flex-1 h-12 px-4 rounded-lg bg-gray-800 text-white" readonly>
+                    <button id="copyLinkButton" class="h-12 w-12 rounded-lg accent-bg hover:brightness-125 transition">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="offlineModal" class="offline-modal">
         <div class="modal-content-container max-w-md text-center p-8 space-y-6">
@@ -664,12 +794,14 @@
     </div>
 
     <script>
-        const validPasswords = ["97", "98", "99"];
+        const validPasswords = ["ELDI", "ERVIS", "ORGITO"];
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
         const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
         const RATING_EXPIRATION_MS = 24 * 60 * 60 * 1000;
         const MOVIE_ID = 'Diablo';
         const DEFAULT_BACKGROUND_URL = 'https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg';
+        const SHARE_URL = 'https://shadowff18778.github.io/STREAMFLIX-by-shadow/';
+        const SHARE_TITLE = 'Regarde ce super film sur Shadow Streaming !';
         
         // Cache des éléments du DOM
         const dom = {
@@ -716,6 +848,16 @@
             offlineModal: document.getElementById('offlineModal'),
             reconnectingModal: document.getElementById('reconnectingModal'),
             updateMessageContainer: document.getElementById('updateMessageContainer'),
+            downloadButton: document.getElementById('downloadButton'),
+            shareButton: document.getElementById('shareButton'),
+            downloadModal: document.getElementById('downloadModal'),
+            shareModal: document.getElementById('shareModal'),
+            shareLinkInput: document.getElementById('shareLinkInput'),
+            copyLinkButton: document.getElementById('copyLinkButton'),
+            shareTwitter: document.getElementById('shareTwitter'),
+            shareFacebook: document.getElementById('shareFacebook'),
+            shareWhatsapp: document.getElementById('shareWhatsapp'),
+            shareTelegram: document.getElementById('shareTelegram')
         };
 
         let isAuthenticated = false;
@@ -1067,6 +1209,38 @@
                 console.error("Erreur critique au démarrage de l'application :", e);
             }
         }
+        
+        function openDownloadModal() {
+            dom.downloadModal.classList.add('show');
+        }
+        function closeDownloadModal() {
+            dom.downloadModal.classList.remove('show');
+        }
+
+        function openShareModal() {
+            dom.shareModal.classList.add('show');
+            dom.shareLinkInput.value = SHARE_URL;
+        }
+        function closeShareModal() {
+            dom.shareModal.classList.remove('show');
+        }
+
+        function copyToClipboard(text) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showMessage("Lien copié !", false);
+                }
+            } catch (err) {
+                console.error('Erreur lors de la copie du texte', err);
+                showMessage("La copie a échoué. Veuillez copier manuellement.", true);
+            }
+            document.body.removeChild(tempInput);
+        }
 
         window.addEventListener('load', () => {
             startApp();
@@ -1080,6 +1254,36 @@
         dom.getPasswordButton.addEventListener('click', openPricingModal);
         dom.reportButton.addEventListener('click', openReportModal);
         dom.reportForm.addEventListener('submit', handleReportSubmit);
+        dom.downloadButton.addEventListener('click', openDownloadModal);
+        dom.shareButton.addEventListener('click', openShareModal);
+        
+        dom.shareTwitter.addEventListener('click', (e) => {
+            e.preventDefault();
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TITLE)}&url=${encodeURIComponent(SHARE_URL)}`;
+            window.open(twitterUrl, '_blank');
+        });
+
+        dom.shareFacebook.addEventListener('click', (e) => {
+            e.preventDefault();
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}`;
+            window.open(facebookUrl, '_blank');
+        });
+
+        dom.shareWhatsapp.addEventListener('click', (e) => {
+            e.preventDefault();
+            const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(SHARE_TITLE + ' ' + SHARE_URL)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+
+        dom.shareTelegram.addEventListener('click', (e) => {
+            e.preventDefault();
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(SHARE_TITLE)}`;
+            window.open(telegramUrl, '_blank');
+        });
+
+        dom.copyLinkButton.addEventListener('click', () => {
+            copyToClipboard(dom.shareLinkInput.value);
+        });
         
         dom.accentColorPicker.addEventListener('input', (e) => {
             currentAccentColor = e.target.value;

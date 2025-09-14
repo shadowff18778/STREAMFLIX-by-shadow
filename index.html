@@ -446,7 +446,7 @@
         <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
             <div class="space-y-2">
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
-                    Shadow Force 
+                    Diablo
                 </h2>
                 <p class="text-base sm:text-lg text-gray-400">
                     Date de sortie: 2025
@@ -462,7 +462,7 @@
         <div class="w-full max-w-6xl mx-auto scale-in">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
                 <div class="aspect-video w-full relative bg-black">
-                    <iframe width="560" height="315" src="//sendvid.com/embed/pszeqxv2" frameborder="0" allowfullscreen></iframe>
+                    <iframe src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=default" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen class="absolute inset-0 w-full h-full border-none" title="Transavia Intro: Clouds & Space" style="transform: scale(1.01); transform-origin: center;"></iframe>
                 </div>
                 
                 <!-- Superposition du mot de passe -->
@@ -508,6 +508,16 @@
                     <span class="text-sm font-medium accent-text">Streaming en cours</span>
                 </div>
             </div>
+            
+            <!-- Message de mise à jour (ajouté comme demandé) -->
+            <div id="updateMessageContainer" class="mt-8 text-center hidden fade-in-up">
+                <div class="inline-flex items-center gap-2 p-4 rounded-lg border border-gray-700 smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
+                    <i class="fa-solid fa-spinner fa-spin text-xl accent-text"></i>
+                    <p class="font-medium text-gray-300">
+                        Le streaming sera mis à jour dans quelques instants. Merci de patienter.
+                    </p>
+                </div>
+            </div>
 
             <!-- Boutons J'aime/Je n'aime pas -->
             <div class="mt-8 flex justify-center fade-in-up">
@@ -521,15 +531,6 @@
                 </div>
             </div>
             
-            <!-- Message de mise à jour -->
-            <div id="updateMessageContainer" class="mt-8 text-center hidden fade-in-up">
-                <div class="inline-flex items-center gap-2 p-4 rounded-lg border border-gray-700 smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
-                    <i class="fa-solid fa-spinner fa-spin text-xl accent-text"></i>
-                    <p class="font-medium text-gray-300">
-                        Le streaming sera mis à jour dans quelques instants. Merci de patienter.
-                    </p>
-                </div>
-            </div>
 
         </div>
     </main>
@@ -692,7 +693,7 @@
 
     <script>
         // Logique de validation du mot de passe
-        const validPasswords = ["ELDI", "ERVIS", "ORGITO"];
+        const validPasswords = ["97", "98", "99"];
         
         // Constantes pour la vérification robot
         const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
@@ -749,6 +750,7 @@
             dislikeButton: document.getElementById('dislikeButton'),
             offlineModal: document.getElementById('offlineModal'),
             reconnectingModal: document.getElementById('reconnectingModal'),
+            updateMessageContainer: document.getElementById('updateMessageContainer'),
         };
 
         let isAuthenticated = false;
@@ -803,9 +805,6 @@
                 const rgbColor = hexToRgb(currentAccentColor);
                 document.documentElement.style.setProperty('--custom-red', rgbColor);
                 dom.movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
-                document.querySelectorAll('.loader-shape').forEach(shape => shape.style.borderColor = currentAccentColor);
-                document.querySelector('.loader-center-glow').style.backgroundColor = currentAccentColor;
-                document.querySelector('.loader-center-glow').style.boxShadow = `0 0 20px ${currentAccentColor}`;
                 dom.pricingPopularBadge.style.backgroundColor = currentAccentColor;
                 dom.pricingPopularCard.style.borderColor = currentAccentColor;
                 dom.pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;

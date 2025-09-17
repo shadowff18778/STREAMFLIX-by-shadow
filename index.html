@@ -23,8 +23,6 @@
             color: var(--text-color);
             overflow: hidden; /* Empêche le défilement du body */
             height: 100vh;
-            /* Ajoutez l'URL de votre image ici pour l'arrière-plan du film */
-            /* Exemple: url('https://votre-image-de-film.com/affiche.jpg') */
             background-image: url('https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg');
             background-size: cover;
             background-position: center;
@@ -78,7 +76,6 @@
             display: flex;
         }
 
-
         .phone-frame {
             position: relative;
             width: 250px;
@@ -105,7 +102,6 @@
         .phone-frame.reconnecting .spinner-container {
             display: flex;
         }
-
 
         .phone-frame::before {
             content: '';
@@ -278,6 +274,24 @@
             animation: spin 1s linear infinite;
             margin-top: 1rem;
         }
+        
+        .unlock-button-styles {
+            /* Styles de base */
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            /* Gradient de couleur */
+            background-image: linear-gradient(to right, var(--brand-color), #3b82f6);
+            
+            /* Styles au survol */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
 
         /* Empêcher l'inspection et le clic droit */
         img {
@@ -308,6 +322,18 @@
             <div id="popup-spinner" class="apple-spinner hidden"></div>
         </div>
     </div>
+    
+    <!-- Popup de sécurité pour la clé -->
+    <div id="security-popup" class="popup-container">
+        <div class="apple-popup">
+            <h2 class="text-white text-2xl font-bold mb-4">Page sécurisée</h2>
+            <p class="text-gray-300 mb-6">Veuillez entrer votre clé pour déverrouiller le contenu.</p>
+            <input type="password" id="key-input" class="bg-gray-800 text-white rounded-lg p-3 w-full text-center focus:outline-none focus:ring-2 focus:ring-brand-color mb-4" placeholder="Entrez la clé">
+            <button id="unlock-button" class="unlock-button-styles">Déverrouiller</button>
+            <div id="unlock-loading-spinner" class="apple-spinner mt-4 hidden"></div>
+            <p id="unlock-message" class="text-red-400 mt-4 hidden">Clé invalide. Veuillez réessayer.</p>
+        </div>
+    </div>
 
     <!-- Couche de protection sur l'arrière-plan -->
     <div id="touch-protector" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index: -1; pointer-events: auto;"></div>
@@ -330,7 +356,7 @@
             </section>
             
             <!-- Lecteur vidéo avec bords arrondis -->
-            <section class="relative max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl">
+            <section id="video-section" class="relative max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl">
                 <p class="text-sm italic text-center p-2 text-gray-400">Lecteur vidéo du film</p>
                 <!-- Overlay de chargement pour le lecteur vidéo -->
                 <div id="video-loading-overlay" class="video-loading-overlay">
@@ -362,96 +388,182 @@
             const mainContent = document.getElementById('main-content');
             const videoLoadingOverlay = document.getElementById('video-loading-overlay');
             const connectionPopupContainer = document.getElementById('connection-popup');
+            const securityPopupContainer = document.getElementById('security-popup');
             const applePopup = connectionPopupContainer.querySelector('.apple-popup');
             const popupTitle = document.getElementById('popup-title');
             const popupMessage = document.getElementById('popup-message');
             const popupSpinner = document.getElementById('popup-spinner');
+            const unlockButton = document.getElementById('unlock-button');
+            const keyInput = document.getElementById('key-input');
+            const unlockLoadingSpinner = document.getElementById('unlock-loading-spinner');
+            const unlockMessage = document.getElementById('unlock-message');
+            const videoPlayer = document.getElementById('video-player');
+            const videoSection = document.getElementById('video-section');
+            let securityTimer = null;
+            const UNLOCK_KEY = "ILDO";
+            const UNLOCK_DURATION = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
 
             // --- Logique du chargement initial ---
+            const isUnlocked = localStorage.getItem('isUnlocked') === 'true';
+            const lastUnlockTime = localStorage.getItem('lastUnlockTime');
+            const now = new Date().getTime();
+            const isNewUser = localStorage.getItem('isUnlocked') === null;
+
+            // Vérifie si le site est déverrouillé et que la période de 24h n'est pas expirée
+            const isSessionValid = isUnlocked && (now - lastUnlockTime) < UNLOCK_DURATION;
+
+            function startSite() {
+                // Montre le contenu principal après le chargement
+                mainContent.style.opacity = '1';
+                // Masque l'overlay de chargement de la vidéo
+                setTimeout(() => {
+                    videoLoadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        videoLoadingOverlay.style.display = 'none';
+                    }, 500);
+                }, 3000);
+
+                // Démarre le timer de sécurité de 30 secondes
+                securityTimer = setTimeout(() => {
+                    showSecurityPopup();
+                }, 30000);
+            }
+
+            // Gère le chargement initial de 5 secondes
             setTimeout(() => {
                 loadingScreen.style.opacity = '0';
-                
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                    mainContent.style.opacity = '1';
-
-                    // Après le chargement du site, on lance le chargement du lecteur pendant 3 secondes
-                    setTimeout(() => {
-                        videoLoadingOverlay.style.opacity = '0';
-                        setTimeout(() => {
-                            videoLoadingOverlay.style.display = 'none';
-                        }, 500);
-                    }, 3000);
+                    
+                    if (isNewUser || isSessionValid) {
+                        startSite();
+                    } else {
+                        // Si la session n'est pas valide, on montre directement la popup de sécurité
+                        showSecurityPopup();
+                    }
                 }, 1000);
             }, 5000);
 
-            // --- Gestion de la connexion ---
-            function showConnectionPopup(title, message, showSpinner = false) {
+            // --- Gestion des Popups Générales (connexion, clic droit) ---
+            function showPopup(popup, title, message, showSpinner = false) {
                 // Rendre le conteneur visible avant d'appliquer les animations
-                connectionPopupContainer.style.display = 'flex';
+                popup.style.display = 'flex';
                 // Petit délai pour permettre au navigateur de rendre l'élément avant de lancer la transition
                 setTimeout(() => {
-                    connectionPopupContainer.classList.add('active');
-                    applePopup.classList.add('active');
+                    popup.classList.add('active');
+                    if (popup.querySelector('.apple-popup')) {
+                        popup.querySelector('.apple-popup').classList.add('active');
+                    }
                 }, 10);
 
-                popupTitle.textContent = title;
-                popupMessage.textContent = message;
-                if (showSpinner) {
-                    popupSpinner.classList.remove('hidden');
-                } else {
-                    popupSpinner.classList.add('hidden');
+                const popupTitle = popup.querySelector('h2');
+                const popupMessage = popup.querySelector('p');
+                const popupSpinner = popup.querySelector('.apple-spinner');
+
+                if (popupTitle) popupTitle.textContent = title;
+                if (popupMessage) popupMessage.textContent = message;
+                if (popupSpinner) {
+                    if (showSpinner) {
+                        popupSpinner.classList.remove('hidden');
+                    } else {
+                        popupSpinner.classList.add('hidden');
+                    }
                 }
             }
 
-            function hideConnectionPopup(delay = 0) {
+            function hidePopup(popup, delay = 0) {
                 setTimeout(() => {
-                    applePopup.classList.remove('active');
-                    connectionPopupContainer.classList.remove('active');
+                    if (popup.querySelector('.apple-popup')) {
+                         popup.querySelector('.apple-popup').classList.remove('active');
+                    }
+                    popup.classList.remove('active');
                     // Cacher le conteneur après la transition
                     setTimeout(() => {
-                        connectionPopupContainer.style.display = 'none';
+                        popup.style.display = 'none';
                     }, 300); // Correspond à la durée de la transition CSS
                 }, delay);
             }
 
             window.addEventListener('offline', () => {
-                showConnectionPopup('Déconnecté', 'Veuillez vérifier votre connexion internet.');
+                showPopup(connectionPopupContainer, 'Déconnecté', 'Veuillez vérifier votre connexion internet.');
             });
 
             window.addEventListener('online', () => {
-                showConnectionPopup('Reconnexion', 'Reconnexion en cours...', true);
+                showPopup(connectionPopupContainer, 'Reconnexion', 'Reconnexion en cours...', true);
                 setTimeout(() => {
-                    hideConnectionPopup();
+                    hidePopup(connectionPopupContainer);
                 }, 3000); // Animation de reconnexion de 3 secondes
             });
 
-            // --- Gestion des clics droits et inspection ---
             document.addEventListener('contextmenu', (event) => {
-                event.preventDefault(); // Empêche l'affichage du menu contextuel
-                
-                // On affiche la popup "Accès refusé"
-                showConnectionPopup('Accès Refusé', 'Le clic droit est désactivé sur ce site.');
-                
-                // On cache la popup après 3 secondes
+                event.preventDefault(); 
+                showPopup(connectionPopupContainer, 'Accès Refusé', 'Le clic droit est désactivé sur ce site.');
                 setTimeout(() => {
-                    hideConnectionPopup();
+                    hidePopup(connectionPopupContainer);
                 }, 3000);
             });
 
-            // Empêcher l'inspection (cette méthode n'est pas 100% fiable, mais elle est un bon complément)
             document.addEventListener('keydown', (e) => {
-                if ((e.ctrlKey && e.shiftKey && e.key === 'I') || // Windows
-                    (e.metaKey && e.altKey && e.key === 'i')) { // Mac
+                if ((e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'i')) {
                     e.preventDefault();
-                    
-                    // On affiche la popup "Accès refusé"
-                    showConnectionPopup('Accès Refusé', 'L\'inspection du code est désactivée.');
-
-                    // On cache la popup après 3 secondes
+                    showPopup(connectionPopupContainer, 'Accès Refusé', 'L\'inspection du code est désactivée.');
                     setTimeout(() => {
-                        hideConnectionPopup();
+                        hidePopup(connectionPopupContainer);
                     }, 3000);
+                }
+            });
+
+            // --- Logique de sécurité de la clé ---
+            function showSecurityPopup() {
+                // Arrêter le timer de sécurité
+                clearTimeout(securityTimer);
+                // Arrêter la vidéo
+                videoPlayer.src = videoPlayer.src; // Recharger la source pour arrêter la lecture
+                // Cacher la section vidéo
+                videoSection.style.display = 'none';
+
+                // Afficher la popup de sécurité
+                showPopup(securityPopupContainer, '', ''); // Les titres sont dans le HTML
+            }
+
+            function hideSecurityPopup() {
+                hidePopup(securityPopupContainer);
+                // Ré-afficher la section vidéo
+                videoSection.style.display = 'block';
+                // On relance le timer pour les prochaines 30 secondes
+                securityTimer = setTimeout(() => {
+                    showSecurityPopup();
+                }, 30000);
+            }
+
+            unlockButton.addEventListener('click', () => {
+                const key = keyInput.value.trim().toUpperCase();
+                if (key === UNLOCK_KEY) {
+                    // Montre l'animation de vérification
+                    unlockButton.classList.add('hidden');
+                    keyInput.classList.add('hidden');
+                    unlockMessage.classList.add('hidden');
+                    unlockLoadingSpinner.classList.remove('hidden');
+
+                    // Animation de 4 secondes
+                    setTimeout(() => {
+                        // Sauvegarde l'état dans le localStorage
+                        localStorage.setItem('isUnlocked', 'true');
+                        localStorage.setItem('lastUnlockTime', new Date().getTime());
+
+                        // Cache la popup et relance le site
+                        hideSecurityPopup();
+                        
+                        // Réinitialise la popup pour la prochaine utilisation
+                        unlockButton.classList.remove('hidden');
+                        keyInput.classList.remove('hidden');
+                        keyInput.value = '';
+                        unlockLoadingSpinner.classList.add('hidden');
+                    }, 4000);
+
+                } else {
+                    // Affiche le message d'erreur
+                    unlockMessage.classList.remove('hidden');
                 }
             });
         });

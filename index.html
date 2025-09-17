@@ -21,7 +21,8 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--shadow-color);
             color: var(--text-color);
-            overflow: hidden; /* Empêche le défilement */
+            overflow: hidden; /* Empêche le défilement du body */
+            height: 100vh;
             /* Ajoutez l'URL de votre image ici pour l'arrière-plan du film */
             /* Exemple: url('https://votre-image-de-film.com/affiche.jpg') */
             background-image: url('https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg');
@@ -43,7 +44,7 @@
         }
 
         /* Styles et animations personnalisés */
-        .loading-screen {
+        .loading-screen, .popup-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -56,7 +57,26 @@
             background-color: var(--shadow-color);
             z-index: 9999;
             transition: opacity 1s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
         }
+        
+        .loading-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .popup-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Fond sombre pour la popup */
+            display: none; /* Cache la popup par défaut */
+        }
+        
+        .popup-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            display: flex;
+        }
+
 
         .phone-frame {
             position: relative;
@@ -65,12 +85,26 @@
             border: 8px solid #2d3748;
             border-radius: 40px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
         }
+        
+        .phone-frame .spinner-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .phone-frame.reconnecting .spinner-container {
+            display: flex;
+        }
+
 
         .phone-frame::before {
             content: '';
@@ -202,17 +236,68 @@
             width: 100%;
             z-index: 10;
         }
+
+        /* Popup stylée Apple (modifiée pour être une fenêtre) */
+        .apple-popup {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .apple-popup h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .apple-popup p {
+            font-size: 1rem;
+            color: #d1d5db;
+        }
+        
+        .apple-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 1rem;
+        }
+
+        /* Empêcher l'inspection et le clic droit */
+        img {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            -webkit-touch-callout: none; /* Empêche le menu de téléchargement sur iOS */
+        }
     </style>
 </head>
 <body class="bg-[#0d1117] text-gray-300 font-inter">
 
     <!-- Écran de chargement (initialement visible) -->
-    <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen active">
         <div class="phone-frame">
             <h1 class="shadow-text">SHADOW</h1>
         </div>
         <div class="loading-bar">
             <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <!-- Popup pour la gestion de la connexion et des clics droits -->
+    <div id="connection-popup" class="popup-container">
+        <div class="apple-popup">
+            <h2 id="popup-title"></h2>
+            <p id="popup-message"></p>
+            <div id="popup-spinner" class="apple-spinner hidden"></div>
         </div>
     </div>
 
@@ -265,9 +350,12 @@
             const loadingScreen = document.getElementById('loading-screen');
             const mainContent = document.getElementById('main-content');
             const videoLoadingOverlay = document.getElementById('video-loading-overlay');
-            const videoPlayer = document.getElementById('video-player');
+            const connectionPopup = document.getElementById('connection-popup');
+            const popupTitle = document.getElementById('popup-title');
+            const popupMessage = document.getElementById('popup-message');
+            const popupSpinner = document.getElementById('popup-spinner');
 
-            // Timeout pour simuler le chargement du site de 5 secondes
+            // --- Logique du chargement initial ---
             setTimeout(() => {
                 loadingScreen.style.opacity = '0';
                 
@@ -280,10 +368,68 @@
                         videoLoadingOverlay.style.opacity = '0';
                         setTimeout(() => {
                             videoLoadingOverlay.style.display = 'none';
-                        }, 500); // Durée de la transition d'opacité
-                    }, 3000); // Durée du chargement du lecteur
-                }, 1000); // Durée de la transition d'opacité
-            }, 5000); // Durée totale du chargement
+                        }, 500);
+                    }, 3000);
+                }, 1000);
+            }, 5000);
+
+            // --- Gestion de la connexion ---
+            function showConnectionPopup(title, message, showSpinner = false) {
+                popupTitle.textContent = title;
+                popupMessage.textContent = message;
+                if (showSpinner) {
+                    popupSpinner.classList.remove('hidden');
+                } else {
+                    popupSpinner.classList.add('hidden');
+                }
+                connectionPopup.classList.add('active');
+            }
+
+            function hideConnectionPopup(delay = 0) {
+                setTimeout(() => {
+                    connectionPopup.classList.remove('active');
+                }, delay);
+            }
+
+            window.addEventListener('offline', () => {
+                showConnectionPopup('Déconnecté', 'Veuillez vérifier votre connexion internet.');
+            });
+
+            window.addEventListener('online', () => {
+                showConnectionPopup('Reconnexion', 'Reconnexion en cours...', true);
+                setTimeout(() => {
+                    hideConnectionPopup();
+                }, 3000); // Animation de reconnexion de 3 secondes
+            });
+
+            // --- Gestion des clics droits et inspection ---
+            document.addEventListener('contextmenu', (event) => {
+                event.preventDefault(); // Empêche l'affichage du menu contextuel
+                
+                // On affiche la popup "Accès refusé"
+                showConnectionPopup('Accès Refusé', 'Le clic droit est désactivé sur ce site.');
+                
+                // On cache la popup après 3 secondes
+                setTimeout(() => {
+                    hideConnectionPopup();
+                }, 3000);
+            });
+
+            // Empêcher l'inspection (cette méthode n'est pas 100% fiable, mais elle est un bon complément)
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey && e.shiftKey && e.key === 'I') || // Windows
+                    (e.metaKey && e.altKey && e.key === 'i')) { // Mac
+                    e.preventDefault();
+                    
+                    // On affiche la popup "Accès refusé"
+                    showConnectionPopup('Accès Refusé', 'L\'inspection du code est désactivée.');
+
+                    // On cache la popup après 3 secondes
+                    setTimeout(() => {
+                        hideConnectionPopup();
+                    }, 3000);
+                }
+            });
         });
     </script>
 </body>

@@ -247,7 +247,7 @@
             padding: 3rem;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
+            max-width: 90%; /* Pour une meilleure adaptation sur mobile */
             transform: scale(0.8);
             opacity: 0;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
@@ -308,6 +308,9 @@
             <div id="popup-spinner" class="apple-spinner hidden"></div>
         </div>
     </div>
+
+    <!-- Couche de protection sur l'arrière-plan -->
+    <div id="touch-protector" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index: -1; pointer-events: auto;"></div>
 
     <!-- Contenu principal du site (initialement caché) -->
     <div id="main-content" class="min-h-screen opacity-0 transition-opacity duration-1000">

@@ -22,6 +22,24 @@
             background-color: var(--shadow-color);
             color: var(--text-color);
             overflow-x: hidden;
+            /* Ajoutez l'URL de votre image ici pour l'arrière-plan du film */
+            /* Exemple: url('https://votre-image-de-film.com/affiche.jpg') */
+            background-image: url('https://placehold.co/1920x1080/0d1117/0d1117');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Overlay sombre pour l'effet Netflix */
+            z-index: -1;
         }
 
         /* Styles et animations personnalisés */
@@ -65,16 +83,20 @@
         }
 
         .shadow-text {
-            color: transparent;
-            background: linear-gradient(45deg, #4b5563, #d1d5db, #4b5563);
-            -webkit-background-clip: text;
-            background-clip: text;
-            background-size: 200% 200%;
-            animation: text-shine 3s ease-in-out infinite;
+            color: #4b5563;
             font-size: 2.5rem;
             font-weight: 700;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
             animation: text-shadow-enter 1s ease-out forwards;
+        }
+
+        .shadow-text.blue {
+            color: transparent;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-shine 3s ease-in-out infinite;
         }
 
         @keyframes text-shadow-enter {
@@ -191,7 +213,7 @@
         <!-- Header stylé Apple, centré et avec bords arrondis en bas -->
         <header class="sticky top-0 z-50 py-4 px-6 md:px-12 apple-header rounded-b-2xl">
             <div class="container mx-auto flex justify-center items-center">
-                <div class="text-xl md:text-2xl font-bold text-white">SHADOW</div>
+                <div class="text-xl md:text-2xl font-bold text-white shadow-text blue">SHADOW</div>
             </div>
         </header>
 

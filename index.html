@@ -1,1453 +1,258 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadow Streaming</title>
-    <!-- Préchargement de l'image de fond pour une fluidité maximale -->
-    <link rel="preload" as="image" href="https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg">
-
-    <!-- Tailwind CSS pour un design moderne et facile à gérer -->
+    <title>SHADOW</title>
+    <!-- Tailwind CSS CDN pour un design fluide -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Police de caractères Inter pour une meilleure lisibilité -->
+    <!-- Police Inter pour un style moderne -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /*
-        OPTIMISATION 1: Utilisation de variables CSS pour une gestion plus facile et une performance accrue
-        au niveau de l'initialisation du style.
-        */
         :root {
-            --custom-red: 220 38 38;
-            --shadow-dark: 0 0% 8%;
-            --shadow-white: 0 0% 98%;
-            --shadow-text-size: 1rem;
-            --like-color: 34 197 94;
-            --dislike-color: 239 68 68;
+            --shadow-color: #0d1117;
+            --text-color: #e5e7eb;
+            --brand-color: #059669;
         }
-        
+
         body {
-            background-color: hsl(var(--shadow-dark));
-            color: hsl(var(--shadow-white));
             font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background-color: var(--shadow-color);
+            color: var(--text-color);
             overflow-x: hidden;
-            font-size: var(--shadow-text-size);
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            /* OPTIMISATION 2: Transition sur background-image pour une fluidité à la place d'une animation JS */
-            transition: background-image 0.5s ease-in-out;
         }
 
-        body::before {
-            content: '';
+        /* Styles et animations personnalisés */
+        .loading-screen {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--shadow-color);
+            z-index: 9999;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .phone-frame {
+            position: relative;
+            width: 250px;
+            height: 450px;
+            border: 8px solid #2d3748;
+            border-radius: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            width: 50px;
+            height: 5px;
+            background-color: #3b4252;
+            border-radius: 5px;
+        }
+
+        .shadow-text {
+            color: transparent;
+            background: linear-gradient(45deg, #4b5563, #d1d5db, #4b5563);
+            -webkit-background-clip: text;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: text-shine 3s ease-in-out infinite;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            animation: text-shadow-enter 1s ease-out forwards;
+        }
+
+        @keyframes text-shadow-enter {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
         
-        /*
-        OPTIMISATION 3: Les animations utilisent maintenant `transform` et `filter` à la place de `top`, `left`, etc.
-        Ces propriétés sont gérées par le GPU et ne causent pas de "reflow" ou "repaint" de la page,
-        ce qui garantit une meilleure performance et fluidité, même pendant le défilement.
-        */
-        .header-title {
-            color: hsl(var(--shadow-white));
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
-            animation: color-and-glow-change 5s linear infinite alternate;
+        @keyframes text-shine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        @keyframes color-and-glow-change {
-            0%, 10% {
-                color: hsl(var(--shadow-white));
-                text-shadow: 0 0 5px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
+        /* Animation de la barre de chargement du site */
+        .loading-bar {
+            width: 80%;
+            height: 4px;
+            background-color: #3b4252;
+            border-radius: 2px;
+            margin-top: 2rem;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background-color: var(--brand-color);
+            width: 0%;
+            animation: load 5s linear forwards;
+        }
+
+        @keyframes load {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* Animation du footer "Powered by" */
+        @keyframes powered-by-animation {
+            0% {
+                text-shadow: 0 0 5px rgba(5, 150, 105, 0.5), 0 0 10px rgba(5, 150, 105, 0.3);
             }
             50% {
-                color: rgb(var(--custom-red));
-                text-shadow: 0 0 5px rgb(var(--custom-red)), 0 0 15px rgb(var(--custom-red));
+                text-shadow: 0 0 20px rgba(5, 150, 105, 0.8), 0 0 30px rgba(5, 150, 105, 0.5);
             }
-            90%, 100% {
-                color: hsl(var(--shadow-white));
-                text-shadow: 0 0 5px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 255, 255, 0.1);
+            100% {
+                text-shadow: 0 0 5px rgba(5, 150, 105, 0.5), 0 0 10px rgba(5, 150, 105, 0.3);
             }
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-up { animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .scale-in { animation: scaleIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) both; }
-
-        .smooth-transition { transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
-
-        .message-box {
-            position: fixed; top: 2rem; left: 50%;
-            transform: translateX(-50%); padding: 1rem 2rem;
-            border-radius: 0.75rem; color: white; z-index: 1000;
-            opacity: 0; transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
-        .message-box.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .footer-signature {
+            animation: powered-by-animation 3s ease-in-out infinite;
         }
 
-        .form-input {
-            transition: all 0.3s ease-in-out;
-            border-width: 1px;
-            border-color: #374151;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: rgb(var(--custom-red));
-            box-shadow: 0 0 0 2px rgba(var(--custom-red), 0.5);
+        /* Style du header Apple-like avec coins arrondis en bas */
+        .apple-header {
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
 
-        @keyframes textReveal {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .header-title-animation {
-            opacity: 0;
-            animation: textReveal 1.5s cubic-bezier(0.7, 0, 0.2, 1) forwards;
-        }
-
-        .video-player-neon-border {
-            position: relative; z-index: 1; border-radius: 1rem;
-        }
-        .video-player-neon-border::before {
-            content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
-            border-radius: 1.25rem; background: rgba(var(--custom-red), 0.5);
-            filter: blur(10px); z-index: -1; opacity: 0;
-            animation: neonPulse 2s ease-in-out infinite;
-        }
-        .video-player-neon-border:hover::before { opacity: 1; }
-        @keyframes neonPulse {
-            0% { box-shadow: 0 0 5px rgb(var(--custom-red)); opacity: 0.5; }
-            50% { box-shadow: 0 0 20px rgb(var(--custom-red)); opacity: 0.8; }
-            100% { box-shadow: 0 0 5px rgb(var(--custom-red)); opacity: 0.5; }
-        }
-
-        @keyframes modalEnter {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        #passwordOverlay .modal-content, #reportModal .modal-content, #pricingModal .modal-content, #robotCheckModal .modal-content, #downloadModal .modal-content, #shareModal .modal-content, #volumeModal .modal-content {
-            animation: modalEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-            position: relative;
-        }
-        
-        .loading-button {
-            position: relative; z-index: 1; cursor: not-allowed;
-            background-color: #4a5568 !important;
-            color: #a0aec0 !important;
-            transition: all 0.3s ease-in-out; overflow: hidden;
-        }
-        .loading-button::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(var(--custom-red), 0.5), transparent);
-            transform: translateX(-100%); animation: shine 1.5s infinite; z-index: 1;
-        }
-        @keyframes shine { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
-
-        .button-spinner { display: inline-block; animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .personal-password-button {
-            position: relative; z-index: 1; padding: 0.75rem 2rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            background: linear-gradient(to right, rgb(var(--custom-red)), rgba(var(--custom-red), 0.6));
-            color: hsl(var(--shadow-white));
-            box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
-            /* OPTIMISATION 4: Utilisation de `transform` pour les effets de survol */
-            transition: all 0.3s ease-in-out;
-            text-transform: uppercase; letter-spacing: 0.05em;
-        }
-        .personal-password-button:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(var(--custom-red), 0.6);
-        }
-
-        .customization-button {
-            position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.5rem;
-            background-color: transparent; border: none; color: hsl(var(--shadow-white));
-            opacity: 0.5; transition: opacity 0.3s, transform 0.3s; z-index: 50;
-        }
-        .customization-button:hover { opacity: 1; transform: scale(1.1) rotate(15deg); }
-        
-        .volume-button {
-            position: absolute; top: 1.5rem; left: 1.5rem; padding: 0.5rem;
-            background-color: transparent; border: none; color: hsl(var(--shadow-white));
-            opacity: 0.5; transition: opacity 0.3s, transform 0.3s; z-index: 50;
-        }
-        .volume-button:hover { opacity: 1; transform: scale(1.1); }
-        
-        .customization-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
-        }
-        .customization-modal.show { opacity: 1; pointer-events: auto; }
-        .customization-panel {
-            background-color: rgba(30, 41, 59, 0.9); border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 1rem; padding: 2rem; width: 90%; max-width: 400px;
-            transform: scale(0.9); transition: transform 0.3s ease-in-out;
-        }
-        .customization-modal.show .customization-panel { transform: scale(1); }
-        .customization-modal .close-btn { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: #d1d5db; }
-        
-        .accent-bg { background-color: rgb(var(--custom-red)); }
-        .accent-text { color: rgb(var(--custom-red)); }
-        .accent-border { border-color: rgb(var(--custom-red)); }
-
-        .password-submit-button {
-            background-color: rgb(var(--custom-red));
-            color: hsl(var(--shadow-white));
-            font-weight: 600;
-            transition: all 0.3s ease-in-out;
-        }
-        .password-submit-button:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 4px 15px rgba(var(--custom-red), 0.4);
-        }
-
-        .pricing-modal, .report-modal, .robot-check-modal, .offline-modal, .reconnecting-modal, .download-modal, .share-modal, .volume-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
-        }
-        .pricing-modal.show, .report-modal.show, .robot-check-modal.show, .offline-modal.show, .reconnecting-modal.show, .download-modal.show, .share-modal.show, .volume-modal.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content-container {
-            background-color: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            position: relative;
-            transform: translateY(0);
-            transition: all 0.3s ease-in-out;
-            max-width: 42rem;
-            width: calc(100% - 2rem);
-            max-height: calc(100vh - 4rem);
-            overflow-y: auto;
-            margin: 2rem;
-            padding: 2rem;
-        }
-        @media (max-width: 640px) {
-            .modal-content-container {
-                padding: 1rem;
-                margin: 1rem;
-            }
-        }
-        .pricing-card {
-            background-color: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            position: relative;
-            transform: translateY(0);
-            transition: all 0.3s ease-in-out;
-            padding: 1.5rem;
-        }
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-        .pricing-card-popular {
-            transform: scale(1.05);
-            border-color: rgb(var(--custom-red));
-            box-shadow: 0 10px 30px rgba(var(--custom-red), 0.4);
-        }
-        .pricing-card-popular:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 45px rgba(var(--custom-red), 0.6);
-        }
-        .pricing-popular-badge {
+        /* Animation de chargement du lecteur */
+        .video-loading-overlay {
             position: absolute;
-            top: 0; right: 0;
-            transform: translate(25%, -50%) rotate(15deg);
-            background-color: rgb(var(--custom-red));
-            color: hsl(var(--shadow-white));
-            padding: 0.25rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        
-        .report-button {
-            position: relative; z-index: 1; padding: 0.75rem 2rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            background-color: #4b5563;
-            color: hsl(var(--shadow-white));
-            transition: all 0.3s ease-in-out;
-        }
-        .report-button:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .rating-container {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            display: inline-flex;
-            gap: 1.5rem;
-            padding: 0.75rem 2rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease-in-out;
-        }
-        .rating-button {
-            background: transparent;
-            border: none;
-            color: #d1d5db;
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
-            outline: none;
-        }
-        .rating-button:hover {
-            transform: scale(1.1);
-        }
-        .rating-button.liked {
-            color: rgb(var(--like-color));
-            text-shadow: 0 0 8px rgba(var(--like-color), 0.6);
-            transform: scale(1.2);
-        }
-        .rating-button.disliked {
-            color: rgb(var(--dislike-color));
-            text-shadow: 0 0 8px rgba(var(--dislike-color), 0.6);
-            transform: scale(1.2);
-        }
-        .download-share-container {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--shadow-color);
             display: flex;
-            gap: 0.5rem;
-            z-index: 20;
-        }
-        .download-share-button {
-            background-color: rgba(30, 41, 59, 0.8);
-            color: hsl(var(--shadow-white));
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            border-radius: 9999px;
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 768px) {
-            .download-share-button {
-                font-size: 0.75rem;
-                padding: 0.5rem 0.75rem;
-                white-space: nowrap;
-            }
-            .download-share-button i {
-                margin-right: 0.25rem;
-            }
-        }
-        .download-share-button:hover {
-            background-color: rgba(71, 85, 105, 0.8);
-            transform: translateY(-2px);
-        }
-        .download-share-button i {
-            margin-right: 0.5rem;
-        }
-        .share-app-icon {
-            display: flex;
-            align-items: center;
             justify-content: center;
-            width: 4rem;
-            height: 4rem;
-            border-radius: 0.75rem;
-            background-color: #27272a;
-            color: #d1d5db;
-            font-size: 2rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
         }
-        .share-app-icon:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        
+        .video-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--text-color);
+            border-top: 4px solid var(--brand-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        .share-app-icon.twitter { background-color: #1da1f2; color: white; }
-        .share-app-icon.facebook { background-color: #1877f2; color: white; }
-        .share-app-icon.whatsapp { background-color: #25d366; color: white; }
-        .share-app-icon.telegram { background-color: #0088cc; color: white; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="bg-[#0d1117] text-gray-300 font-inter">
 
-    <div id="loader-screen">
-        <div class="loader-container">
-            <div class="loader-shape"></div>
-            <div class="loader-shape"></div>
-            <div class="loader-shape"></div>
-            <div class="loader-center-glow"></div>
+    <!-- Écran de chargement (initialement visible) -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="phone-frame">
+            <h1 class="shadow-text">SHADOW</h1>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
         </div>
     </div>
 
-    <div id="messageBox" class="message-box bg-red-600"></div>
+    <!-- Contenu principal du site (initialement caché) -->
+    <div id="main-content" class="min-h-screen opacity-0 transition-opacity duration-1000">
 
-    <header id="mainHeader" class="sticky top-0 z-40 bg-gray-900/90 backdrop-blur-md border-b border-gray-700 opacity-0">
-        <div class="container mx-auto px-6 py-4 relative">
-            <div class="flex flex-col items-center justify-center space-y-1">
-                <h1 id="shadowTitle" class="text-4xl md:text-5xl font-black tracking-wider header-title header-title-animation font-['Inter']" style="color: rgb(var(--custom-red));">
-                    SHADOW
-                </h1>
-                <p id="headerSubtitle" class="text-lg md:text-xl text-gray-400 font-medium overflow-hidden whitespace-nowrap opacity-0"></p>
+        <!-- Header stylé Apple, centré et avec bords arrondis en bas -->
+        <header class="sticky top-0 z-50 py-4 px-6 md:px-12 apple-header rounded-b-2xl">
+            <div class="container mx-auto flex justify-center items-center">
+                <div class="text-xl md:text-2xl font-bold text-white">SHADOW</div>
             </div>
-            <button id="customizationButton" class="customization-button">
-                <i class="fas fa-sliders-h"></i>
-            </button>
-        </div>
-    </header>
+        </header>
 
-    <div id="customizationModal" class="customization-modal">
-        <div class="customization-panel space-y-6">
-            <button class="close-btn absolute top-4 right-4" onclick="closeCustomizationModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="text-2xl font-bold">Personnalisation</h2>
+        <!-- Contenu principal -->
+        <main class="container mx-auto p-4 md:p-8 space-y-8">
+            <section class="mt-12 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-2">Shadow Force</h1>
+                <p class="text-lg md:text-xl text-gray-400">Date de sortie: 2025</p>
+            </section>
             
-            <div class="space-y-4">
-                <div>
-                    <h3 class="text-lg font-semibold">Couleur d'accent</h3>
-                    <div class="mt-2 flex items-center justify-between">
-                        <span>Couleur des éléments dynamiques</span>
-                        <input type="color" id="accentColorPicker" class="w-8 h-8 rounded-full border-none cursor-pointer p-0" value="#DC2626">
-                    </div>
+            <!-- Lecteur vidéo avec bords arrondis -->
+            <section class="relative max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-2xl">
+                <p class="text-sm italic text-center p-2 text-gray-400">Lecteur vidéo du film</p>
+                <!-- Overlay de chargement pour le lecteur vidéo -->
+                <div id="video-loading-overlay" class="video-loading-overlay">
+                    <div class="video-loading-spinner"></div>
                 </div>
+                <!-- Lecteur vidéo parfaitement fluide -->
+                <iframe
+                    id="video-player"
+                    src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark"
+                    width="100%"
+                    style="aspect-ratio: 16/9; width: 100%;"
+                    frameborder="0"
+                    allow="autoplay; fullscreen"
+                    allowfullscreen
+                    title="Bande-annonce de Shadow Force">
+                </iframe>
+            </section>
+        </main>
 
-                <div>
-                    <h3 class="text-lg font-semibold">Taille du texte</h3>
-                    <div class="mt-2 space-y-2">
-                         <div class="flex items-center justify-between">
-                            <span>Mode automatique</span>
-                            <input type="checkbox" id="autoTextSizeToggle" class="h-5 w-5 rounded form-checkbox accent-text border-gray-500 bg-gray-700" checked>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button id="decreaseTextBtn" class="py-1 px-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition" disabled>A-</button>
-                            <span id="textSizeValue" class="flex-1 text-center text-sm text-gray-400">100%</span>
-                            <button id="increaseTextBtn" class="py-1 px-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition" disabled>A+</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold">Affichage</h3>
-                    <div class="mt-2 flex items-center justify-between">
-                        <span>Afficher les infos du film</span>
-                        <input type="checkbox" id="toggleMovieInfo" class="h-5 w-5 rounded form-checkbox accent-text border-gray-500 bg-gray-700" checked>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold">Fond d'écran</h3>
-                    <div class="mt-2 space-y-2">
-                        <label for="backgroundImageInput" class="w-full text-center py-2 px-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition cursor-pointer">
-                            Choisir une image
-                        </label>
-                        <input type="file" id="backgroundImageInput" class="hidden" accept="image/*">
-                        <button id="resetBackgroundBtn" class="w-full text-center py-2 px-4 rounded-lg bg-red-800 hover:bg-red-700 transition">
-                            Fond par défaut
-                        </button>
-                        <div id="backgroundPreviewContainer" class="hidden flex items-center justify-between gap-2 p-2 bg-gray-800 rounded-lg">
-                            <img id="backgroundPreview" class="w-16 h-16 object-cover rounded-lg">
-                            <button id="resetBackgroundBtn" class="p-2 text-gray-400 hover:text-red-500 transition">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <main id="mainContent" class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-12 opacity-0">
-        <div id="movieInfoContainer" class="text-center space-y-3 sm:space-y-4 fade-in-up">
-            <div class="space-y-2">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold">
-                    Shadow Force
-                </h2>
-                <p class="text-base sm:text-lg text-gray-400">
-                    Date de sortie: 2025
-                </p>
-                <p class="text-sm sm:text-base text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                    Découvrez une expérience de streaming ultime avec une qualité premium et une lecture fluide.
-                </p>
-            </div>
-            <div id="movieInfoDivider" class="w-16 sm:w-24 h-1 bg-gradient-to-r from-transparent to-transparent mx-auto rounded-full" style="background-image: linear-gradient(to right, transparent, rgb(var(--custom-red)), transparent);"></div>
-        </div>
-
-        <div class="w-full max-w-6xl mx-auto scale-in">
-            <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-800 video-player-neon-border">
-                <div class="aspect-video w-full relative bg-black">
-                    <!-- Mise à jour du lecteur vidéo avec le code d'intégration fourni par l'utilisateur -->
-                    <iframe 
-                        id="videoPlayer"
-                        src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark" 
-                        width="100%"
-                        style="aspect-ratio: 16/9; width: 100%;"
-                        frameborder="0" 
-                        allow="autoplay; fullscreen" 
-                        allowfullscreen
-                        title="Transavia Intro: Clouds & Space" 
-                        class="absolute inset-0 w-full h-full border-none">
-                    </iframe>
-                </div>
-                
-                <!-- Boutons Télécharger, Partager et Paramètres ajoutés -->
-                <div class="download-share-container">
-                    <button id="downloadButton" class="download-share-button">
-                        <i class="fa-solid fa-download"></i> <span class="hidden md:inline">Télécharger</span>
-                    </button>
-                    <button id="shareButton" class="download-share-button">
-                        <i class="fa-solid fa-share-alt"></i> <span class="hidden md:inline">Partager</span>
-                    </button>
-                    <button id="volumeButton" class="download-share-button">
-                         <i class="fas fa-volume-up"></i> <span class="hidden md:inline">Volume</span>
-                    </button>
-                </div>
-
-                <div id="passwordOverlay" class="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 smooth-transition opacity-100 z-10">
-                    <div class="modal-content bg-gray-800/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 w-full max-w-sm space-y-4 shadow-2xl border border-gray-700/50 max-h-full overflow-y-auto">
-                        <div class="text-center space-y-1">
-                            <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
-                                <i class="fa-solid fa-lock text-xl accent-text"></i>
-                            </div>
-                            <h3 class="text-xl font-bold">Accès restreint</h3>
-                            <p class="text-sm text-gray-400">Entre le mot de passe pour continuer</p>
-                        </div>
-
-                        <form class="space-y-3" onsubmit="handlePasswordSubmit(event)">
-                            <div class="space-y-1">
-                                <input
-                                    type="password"
-                                    placeholder="Entre le mot de passe"
-                                    id="passwordInput"
-                                    class="form-input w-full h-10 px-4 rounded-lg bg-gray-800 text-white"
-                                />
-                                <p id="errorMessage" class="text-sm hidden accent-text"></p>
-                            </div>
-
-                            <button type="submit" id="submitButton" class="w-full h-10 px-4 rounded-lg password-submit-button">
-                                Accéder au stream
-                            </button>
-                        </form>
-
-                        <div class="text-center">
-                            <p class="text-xs text-gray-400">
-                                L'accès expire après 3 heures d'inactivité
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="streamingStatus" class="mt-6 text-center hidden">
-                <div class="inline-flex items-center gap-2 px-4 py-2 border rounded-full smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
-                    <div class="w-2 h-2 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
-                    <span class="text-sm font-medium accent-text">Streaming en cours</span>
-                </div>
-            </div>
-            
-            <div id="updateMessageContainer" class="mt-8 text-center hidden fade-in-up">
-                <div class="inline-flex items-center gap-2 p-4 rounded-lg border border-gray-700 smooth-transition" style="background-color: rgba(var(--custom-red), 0.1); border-color: rgba(var(--custom-red), 0.2);">
-                    <i class="fa-solid fa-spinner fa-spin text-xl accent-text"></i>
-                    <p class="font-medium text-gray-300">
-                        Le streaming sera mis à jour dans quelques instants. Merci de patienter.
-                    </p>
-                </div>
-            </div>
-
-            <div class="mt-8 flex justify-center fade-in-up">
-                <div class="rating-container">
-                    <button id="likeButton" class="rating-button" title="J'aime">
-                        <i class="fa-solid fa-thumbs-up"></i>
-                    </button>
-                    <button id="dislikeButton" class="rating-button" title="Je n'aime pas">
-                        <i class="fa-solid fa-thumbs-down"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-    
-    <footer id="mainFooter" class="text-center py-8 border-t border-gray-700/30 opacity-0">
-        <div class="container mx-auto px-6">
-            <div class="space-y-4">
-                <div class="flex items-center justify-center gap-2">
-                    <span class="text-gray-400">Propulsé par</span>
-                    <span class="font-semibold header-title" style="color: rgb(var(--custom-red));">Shadow</span>
-                </div>
-                <div class="text-xs text-gray-400 space-y-1">
-                    <p>Expérience de streaming premium</p>
-                    <div class="flex items-center justify-center gap-1">
-                        <div class="w-1 h-1 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
-                        <span>Sécurisé • Rapide • Fiable</span>
-                        <div class="w-1 h-1 rounded-full animate-pulse" style="background-color: rgb(var(--custom-red));"></div>
-                    </div>
-                </div>
-                <div class="flex justify-center gap-4 flex-wrap">
-                    <button id="getPasswordButton" class="personal-password-button">
-                        Obtenir mon mot de passe
-                    </button>
-                    <button id="reportButton" class="report-button">
-                        Signaler un problème
-                    </button>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div id="pricingModal" class="pricing-modal">
-        <div class="modal-content-container">
-            <button class="close-btn absolute top-4 right-4" onclick="closePricingModal()">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8 space-y-2">
-                <h2 class="text-3xl font-bold">Obtenez votre mot de passe</h2>
-                <p class="text-gray-400">Accédez à l'expérience complète de Shadow Streaming.</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="pricing-card p-6 flex flex-col items-center text-center">
-                    <h3 class="text-2xl font-bold mb-2">Standard</h3>
-                    <p class="text-4xl font-black mb-4">4.99€<span class="text-base text-gray-400 font-normal">/mois</span></p>
-                    <ul class="text-gray-400 text-sm mb-6 space-y-2 text-left">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Accès à tous les films</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Streaming HD sans publicité</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Mot de passe unique</li>
-                        <li class="flex items-center gap-2 text-gray-600"><i class="fa-solid fa-xmark text-red-500"></i> Pas de changement de mot de passe</li>
-                    </ul>
-                    <button class="w-full h-12 rounded-full font-semibold smooth-transition personal-password-button" onclick="showComingSoon()">
-                        Acheter maintenant
-                    </button>
-                </div>
-                
-                <div class="pricing-card pricing-card-popular p-6 flex flex-col items-center text-center">
-                    <div class="pricing-popular-badge">Popular</div>
-                    <h3 class="text-2xl font-bold mb-2">Premium</h3>
-                    <p class="text-4xl font-black mb-4">9.99€<span class="text-base text-gray-400 font-normal">/mois</span></p>
-                    <ul class="text-gray-400 text-sm mb-6 space-y-2 text-left">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check accent-text"></i> Accès à tous les films</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check accent-text"></i> Streaming 4K Ultra HD</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check accent-text"></i> Demandez n'importe quel film</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check accent-text"></i> Changez votre mot de passe à volonté</li>
-                    </ul>
-                    <input type="password" placeholder="Votre mot de passe" class="form-input w-full h-10 px-4 rounded-full bg-gray-800 text-white mb-4">
-                    <button class="w-full h-12 rounded-full font-semibold smooth-transition personal-password-button" onclick="showComingSoon()">
-                        Acheter maintenant
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="reportModal" class="report-modal">
-        <div class="modal-content-container max-w-lg">
-            <button class="close-btn absolute top-4 right-4" onclick="closeReportModal()">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8 space-y-2">
-                <h2 class="text-3xl font-bold">Signaler un problème</h2>
-                <p class="text-gray-400">Votre feedback nous aide à améliorer l'expérience.</p>
-            </div>
-
-            <form id="reportForm" class="space-y-6">
-                <div>
-                    <label for="reportType" class="block text-sm font-medium text-gray-300 mb-2">Type de problème</label>
-                    <select id="reportType" class="form-input w-full h-12 px-4 rounded-lg bg-gray-800 text-white cursor-pointer">
-                        <option value="player">Problème avec le lecteur vidéo</option>
-                        <option value="password">Mot de passe incorrect</option>
-                        <option value="access">Problème d'accès</option>
-                        <option value="other">Autre</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="reportMessage" class="block text-sm font-medium text-gray-300 mb-2">Message (facultatif)</label>
-                    <textarea id="reportMessage" rows="4" class="form-input w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-500" placeholder="Décrivez votre problème en quelques mots..."></textarea>
-                </div>
-                <button type="submit" id="reportSubmitButton" class="w-full h-12 rounded-lg password-submit-button">
-                    Envoyer le rapport
-                </button>
-            </form>
-        </div>
-    </div>
-    
-    <div id="robotCheckModal" class="robot-check-modal">
-        <div class="modal-content-container max-w-sm">
-            <div class="text-center mb-6 space-y-2">
-                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-shield-halved text-xl accent-text"></i>
-                </div>
-                <h2 class="text-2xl font-bold">Vérification de sécurité</h2>
-                <p class="text-gray-400 text-sm">Pour accéder au contenu, veuillez confirmer que vous n'êtes pas un robot.</p>
-            </div>
-
-            <form id="robotCheckForm" class="space-y-6" onsubmit="handleRobotCheckSubmit(event)">
-                <div class="flex items-center gap-3">
-                    <input type="checkbox" id="robotCheckbox" class="h-6 w-6 rounded accent-text border-gray-500 bg-gray-700 cursor-pointer">
-                    <label for="robotCheckbox" class="text-lg font-medium text-gray-300 select-none">Je ne suis pas un robot</label>
-                </div>
-                <button type="submit" id="robotSubmitButton" class="w-full h-12 rounded-lg password-submit-button">
-                    Valider
-                </button>
-            </form>
-
-            <div id="robotLoadingAnimation" class="hidden flex flex-col items-center justify-center mt-6">
-                <div class="w-10 h-10 border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
-                <p class="mt-4 text-gray-400">Vérification en cours...</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modale de Téléchargement -->
-    <div id="downloadModal" class="download-modal">
-        <div class="modal-content-container max-w-md">
-            <button class="close-btn absolute top-4 right-4" onclick="closeDownloadModal()">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8 space-y-2">
-                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-cloud-arrow-down text-xl accent-text"></i>
-                </div>
-                <h2 class="text-3xl font-bold">Télécharger en 2K</h2>
-                <p class="text-gray-400">
-                    Pour soutenir l'équipe et accéder au téléchargement en qualité 2K,
-                    un petit paiement est nécessaire.
-                </p>
-            </div>
-            <div class="text-center space-y-4">
-                <p class="text-5xl font-black accent-text">0.99€</p>
-                <button class="w-full h-12 rounded-lg password-submit-button" onclick="showComingSoon()">
-                    Payer et télécharger
-                </button>
-                <p class="text-xs text-gray-500">
-                    Paiement sécurisé. Votre soutien est précieux !
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modale de Partage -->
-    <div id="shareModal" class="share-modal">
-        <div class="modal-content-container max-w-lg">
-            <button class="close-btn absolute top-4 right-4" onclick="closeShareModal()">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8 space-y-2">
-                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-share-nodes text-xl accent-text"></i>
-                </div>
-                <h2 class="text-3xl font-bold">Partager ce stream</h2>
-                <p class="text-gray-400">
-                    Partagez ce contenu avec vos amis !
-                </p>
-            </div>
-
-            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                <a href="#" id="shareTwitter" class="share-app-icon twitter" title="Partager sur Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" id="shareFacebook" class="share-app-icon facebook" title="Partager sur Facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" id="shareWhatsapp" class="share-app-icon whatsapp" title="Partager sur WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
-                <a href="#" id="shareTelegram" class="share-app-icon telegram" title="Partager sur Telegram">
-                    <i class="fab fa-telegram-plane"></i>
-                </a>
-            </div>
-
-            <div class="mt-6 text-center space-y-2">
-                <p class="text-sm text-gray-400">
-                    Ou copiez le lien pour le partager où vous voulez :
-                </p>
-                <div class="flex gap-2">
-                    <input type="text" id="shareLinkInput" class="form-input flex-1 h-12 px-4 rounded-lg bg-gray-800 text-white" readonly>
-                    <button id="copyLinkButton" class="h-12 w-12 rounded-lg accent-bg hover:brightness-125 transition">
-                        <i class="fa-solid fa-copy"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Nouvelle modale pour le contrôle du volume -->
-    <div id="volumeModal" class="volume-modal">
-        <div class="modal-content-container max-w-sm">
-            <button class="close-btn absolute top-4 right-4" onclick="closeVolumeModal()">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-6 space-y-2">
-                <div class="w-12 h-12 mx-auto accent-bg/10 rounded-full flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-volume-high text-xl accent-text"></i>
-                </div>
-                <h2 class="text-2xl font-bold">Contrôle du volume</h2>
-                <p class="text-gray-400 text-sm">Ajustez le volume jusqu'à 300% pour une immersion totale.</p>
-            </div>
-            
-            <div class="mt-4 flex flex-col items-center gap-4">
-                <div class="relative w-full h-2 rounded-full bg-gray-700">
-                    <div id="volumeFill" class="absolute h-full rounded-full bg-red-600 transition-all duration-300 ease-in-out"></div>
-                </div>
-                <input
-                    type="range"
-                    id="volumeSlider"
-                    min="0"
-                    max="300"
-                    value="100"
-                    class="w-full h-2 rounded-full cursor-pointer appearance-none bg-transparent"
-                />
-                <div class="flex items-center justify-between w-full">
-                    <i class="fa-solid fa-volume-off text-gray-400"></i>
-                    <span id="volumeValue" class="text-lg font-bold">100%</span>
-                    <i class="fa-solid fa-volume-high accent-text"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="offlineModal" class="offline-modal">
-        <div class="modal-content-container max-w-md text-center p-8 space-y-6">
-            <i class="fa-solid fa-wifi-slash text-6xl accent-text"></i>
-            <h2 class="text-3xl font-bold">Connexion perdue</h2>
-            <p class="text-gray-400">
-                Vous n'êtes pas connecté à Internet. Vérifiez votre connexion et le site se mettra à jour automatiquement.
-            </p>
-        </div>
-    </div>
-
-    <div id="reconnectingModal" class="reconnecting-modal">
-        <div class="modal-content-container max-w-xs text-center p-8 space-y-6">
-            <div class="w-16 h-16 mx-auto border-4 border-t-4 border-gray-200 rounded-full animate-spin" style="border-top-color: rgb(var(--custom-red));"></div>
-            <h2 class="text-xl font-bold">Reconnexion en cours...</h2>
-        </div>
+        <!-- Footer avec signature animée -->
+        <footer class="py-4 mt-12 text-center text-gray-500 text-sm">
+            <p class="footer-signature">Powered by SHadow</p>
+        </footer>
     </div>
 
     <script>
-        const validPasswords = ["ELDI", "ERVIS", "ORGITO"];
-        const LAST_ROBOT_CHECK_KEY = 'shadowRobotCheck';
-        const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
-        const RATING_EXPIRATION_MS = 24 * 60 * 60 * 1000;
-        const MOVIE_ID = 'Diablo';
-        const DEFAULT_BACKGROUND_URL = 'https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg';
-        const SHARE_URL = 'https://shadowff18778.github.io/STREAMFLIX-by-shadow/';
-        const SHARE_TITLE = 'Regarde ce super film sur Shadow Streaming !';
-        
-        // Cache des éléments du DOM
-        const dom = {
-            passwordOverlay: document.getElementById('passwordOverlay'),
-            streamingStatus: document.getElementById('streamingStatus'),
-            passwordInput: document.getElementById('passwordInput'),
-            errorMessage: document.getElementById('errorMessage'),
-            submitButton: document.getElementById('submitButton'),
-            messageBox: document.getElementById('messageBox'),
-            getPasswordButton: document.getElementById('getPasswordButton'),
-            reportButton: document.getElementById('reportButton'),
-            customizationButton: document.getElementById('customizationButton'),
-            customizationModal: document.getElementById('customizationModal'),
-            accentColorPicker: document.getElementById('accentColorPicker'),
-            toggleMovieInfo: document.getElementById('toggleMovieInfo'),
-            autoTextSizeToggle: document.getElementById('autoTextSizeToggle'),
-            decreaseTextBtn: document.getElementById('decreaseTextBtn'),
-            increaseTextBtn: document.getElementById('increaseTextBtn'),
-            textSizeValue: document.getElementById('textSizeValue'),
-            pricingModal: document.getElementById('pricingModal'),
-            pricingPopularBadge: document.querySelector('.pricing-popular-badge'),
-            pricingPopularCard: document.querySelector('.pricing-card-popular'),
-            loaderScreen: document.getElementById('loader-screen'),
-            mainHeader: document.getElementById('mainHeader'),
-            mainContent: document.getElementById('mainContent'),
-            mainFooter: document.getElementById('mainFooter'),
-            headerSubtitle: document.getElementById('headerSubtitle'),
-            movieInfoContainer: document.getElementById('movieInfoContainer'),
-            movieInfoDivider: document.getElementById('movieInfoDivider'),
-            reportModal: document.getElementById('reportModal'),
-            reportForm: document.getElementById('reportForm'),
-            reportSubmitButton: document.getElementById('reportSubmitButton'),
-            robotCheckModal: document.getElementById('robotCheckModal'),
-            robotCheckForm: document.getElementById('robotCheckForm'),
-            robotCheckbox: document.getElementById('robotCheckbox'),
-            robotSubmitButton: document.getElementById('robotSubmitButton'),
-            robotLoadingAnimation: document.getElementById('robotLoadingAnimation'),
-            backgroundImageInput: document.getElementById('backgroundImageInput'),
-            backgroundPreviewContainer: document.getElementById('backgroundPreviewContainer'),
-            backgroundPreview: document.getElementById('backgroundPreview'),
-            resetBackgroundBtn: document.getElementById('resetBackgroundBtn'),
-            likeButton: document.getElementById('likeButton'),
-            dislikeButton: document.getElementById('dislikeButton'),
-            offlineModal: document.getElementById('offlineModal'),
-            reconnectingModal: document.getElementById('reconnectingModal'),
-            updateMessageContainer: document.getElementById('updateMessageContainer'),
-            downloadButton: document.getElementById('downloadButton'),
-            shareButton: document.getElementById('shareButton'),
-            downloadModal: document.getElementById('downloadModal'),
-            shareModal: document.getElementById('shareModal'),
-            shareLinkInput: document.getElementById('shareLinkInput'),
-            copyLinkButton: document.getElementById('copyLinkButton'),
-            shareTwitter: document.getElementById('shareTwitter'),
-            shareFacebook: document.getElementById('shareFacebook'),
-            shareWhatsapp: document.getElementById('shareWhatsapp'),
-            shareTelegram: document.getElementById('shareTelegram'),
-            videoPlayer: document.getElementById('videoPlayer'),
-            volumeButton: document.getElementById('volumeButton'),
-            volumeModal: document.getElementById('volumeModal'),
-            volumeSlider: document.getElementById('volumeSlider'),
-            volumeValue: document.getElementById('volumeValue'),
-            volumeFill: document.getElementById('volumeFill')
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            const mainContent = document.getElementById('main-content');
+            const videoLoadingOverlay = document.getElementById('video-loading-overlay');
+            const videoPlayer = document.getElementById('video-player');
 
-        let isAuthenticated = false;
-        let baseFontSize = 16;
-        let currentTextSize = 100;
-        let currentAccentColor = '#DC2626';
-        const subtitleText = 'Le futur du divertissement';
-        
-        // Fonction pour afficher un message temporaire
-        function showMessage(message, isError = false) {
-            try {
-                dom.messageBox.textContent = message;
-                dom.messageBox.className = 'message-box show';
-                dom.messageBox.style.backgroundColor = isError ? 'rgb(var(--custom-red))' : 'rgb(60 179 113)';
+            // Timeout pour simuler le chargement du site de 5 secondes
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                
                 setTimeout(() => {
-                    dom.messageBox.classList.remove('show');
-                }, 3000);
-            } catch (e) {
-                console.error("Erreur lors de l'affichage du message :", e);
-            }
-        }
-        
-        function showComingSoon() {
-            showMessage("Fonctionnalité en cours de développement... Coming Soon!", false);
-        }
+                    loadingScreen.style.display = 'none';
+                    mainContent.style.opacity = '1';
 
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? `${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(result[3], 16)}` : null;
-        }
-
-        function saveSettings() {
-            try {
-                const settings = {
-                    accentColor: currentAccentColor,
-                    movieInfoVisible: !dom.movieInfoContainer.classList.contains('hidden'),
-                    autoTextSize: dom.autoTextSizeToggle.checked,
-                    textSize: currentTextSize,
-                };
-                localStorage.setItem('shadowSettings', JSON.stringify(settings));
-            } catch (e) {
-                console.error("Erreur lors de la sauvegarde des paramètres :", e);
-            }
-        }
-        
-        function updateDynamicColors() {
-            try {
-                const rgbColor = hexToRgb(currentAccentColor);
-                document.documentElement.style.setProperty('--custom-red', rgbColor);
-                dom.movieInfoDivider.style.backgroundImage = `linear-gradient(to right, transparent, ${currentAccentColor}, transparent)`;
-                dom.pricingPopularBadge.style.backgroundColor = currentAccentColor;
-                dom.pricingPopularCard.style.borderColor = currentAccentColor;
-                dom.pricingPopularCard.style.boxShadow = `0 10px 30px rgba(${rgbColor}, 0.4)`;
-                document.querySelectorAll('.accent-text').forEach(el => el.style.color = currentAccentColor);
-                document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = `rgba(${rgbColor}, 0.1)`);
-                document.querySelectorAll('.accent-border').forEach(el => el.style.borderColor = currentAccentColor);
-                dom.shadowTitle.style.color = currentAccentColor;
-                dom.submitButton.style.backgroundColor = currentAccentColor;
-                dom.submitButton.style.boxShadow = `0 4px 15px rgba(${rgbColor}, 0.4)`;
-                dom.reportSubmitButton.style.backgroundColor = currentAccentColor;
-                dom.robotSubmitButton.style.backgroundColor = currentAccentColor;
-            } catch (e) {
-                console.error("Erreur lors de la mise à jour des couleurs :", e);
-            }
-        }
-
-        function applySettings() {
-            try {
-                const settings = JSON.parse(localStorage.getItem('shadowSettings'));
-                if (settings) {
-                    currentAccentColor = settings.accentColor;
-                    dom.accentColorPicker.value = currentAccentColor;
-                    updateDynamicColors();
-                    if (settings.movieInfoVisible) {
-                        dom.movieInfoContainer.classList.remove('hidden');
-                        dom.toggleMovieInfo.checked = true;
-                    } else {
-                        dom.movieInfoContainer.classList.add('hidden');
-                        dom.toggleMovieInfo.checked = false;
-                    }
-                    dom.autoTextSizeToggle.checked = settings.autoTextSize;
-                    if (settings.autoTextSize) {
-                        enableAutoTextSize();
-                    } else {
-                        currentTextSize = settings.textSize;
-                        document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                        dom.textSizeValue.textContent = `${currentTextSize}%`;
-                        disableAutoTextSize();
-                    }
-                }
-                const savedImage = localStorage.getItem('shadowBackground');
-                const backgroundImage = savedImage || DEFAULT_BACKGROUND_URL;
-                document.body.style.backgroundImage = `url(${backgroundImage})`;
-            } catch (e) {
-                console.error("Erreur lors de l'application des paramètres :", e);
-            }
-        }
-        
-        let resizeTimeout;
-        function autoAdjustTextSize() {
-            const width = window.innerWidth;
-            let newSize = 100;
-            if (width < 640) { newSize = 80; }
-            else if (width < 1024) { newSize = 90; }
-            else { newSize = 100; }
-            currentTextSize = newSize;
-            document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * newSize) / 100}px`);
-        }
-        
-        function enableAutoTextSize() {
-            autoAdjustTextSize();
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(autoAdjustTextSize, 250);
-            });
-            dom.decreaseTextBtn.disabled = true;
-            dom.increaseTextBtn.disabled = true;
-        }
-
-        function disableAutoTextSize() {
-            window.removeEventListener('resize', autoAdjustTextSize);
-            dom.decreaseTextBtn.disabled = false;
-            dom.increaseTextBtn.disabled = false;
-        }
-
-        function checkAuthentication() {
-            try {
-                const lastAccess = localStorage.getItem('shadowAccess');
-                const threeHours = 3 * 60 * 60 * 1000;
-                if (!lastAccess || Date.now() - parseInt(lastAccess) > threeHours) {
-                    dom.passwordOverlay.classList.remove('hidden', 'opacity-0');
-                    isAuthenticated = false;
-                    dom.passwordInput.value = '';
-                } else {
-                    isAuthenticated = true;
-                    dom.passwordOverlay.classList.add('hidden', 'opacity-0');
-                    dom.streamingStatus.classList.remove('hidden');
-                }
-            } catch (e) {
-                console.error("Erreur lors de la vérification de l'authentification :", e);
-            }
-        }
-
-        function startStreaming() {
-            dom.passwordOverlay.classList.remove('opacity-100');
-            dom.passwordOverlay.classList.add('opacity-0');
-            dom.passwordOverlay.addEventListener('transitionend', () => {
-                dom.passwordOverlay.classList.add('hidden');
-            }, { once: true });
-            dom.streamingStatus.classList.remove('hidden');
-            isAuthenticated = true;
-            showMessage("Accès accordé !", false);
-        }
-
-        async function handlePasswordSubmit(event) {
-            event.preventDefault();
-            const password = dom.passwordInput.value.trim();
-            if (!password) {
-                dom.errorMessage.textContent = 'Veuillez entrer un mot de passe.';
-                dom.errorMessage.classList.remove('hidden');
-                return;
-            }
-            
-            const originalButtonText = dom.submitButton.innerHTML;
-            const originalButtonClasses = dom.submitButton.className;
-            dom.submitButton.classList.add('loading-button');
-            dom.submitButton.innerHTML = `<span class="relative z-10"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Vérification...</span>`;
-            dom.submitButton.disabled = true;
-            dom.errorMessage.classList.add('hidden');
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            dom.submitButton.classList.remove('loading-button');
-
-            if (validPasswords.includes(password.toUpperCase())) {
-                localStorage.setItem('shadowAccess', Date.now().toString());
-                const lastRobotCheck = localStorage.getItem(LAST_ROBOT_CHECK_KEY);
-                if (!lastRobotCheck || Date.now() - parseInt(lastRobotCheck) > ONE_WEEK_IN_MS) {
-                    dom.passwordOverlay.classList.add('hidden');
-                    openRobotCheckModal();
-                } else {
-                    startStreaming();
-                }
-            } else {
-                dom.errorMessage.textContent = 'Mot de passe invalide. Accès refusé.';
-                dom.errorMessage.classList.remove('hidden');
-                dom.passwordInput.value = '';
-            }
-            
-            dom.submitButton.innerHTML = originalButtonText;
-            dom.submitButton.className = originalButtonClasses;
-            dom.submitButton.disabled = false;
-        }
-
-        function updateOnlineStatus() {
-            if (navigator.onLine) {
-                dom.offlineModal.classList.remove('show');
-                dom.reconnectingModal.classList.add('show');
-                setTimeout(() => {
-                    dom.reconnectingModal.classList.remove('show');
-                    showMessage("Connexion rétablie ! Le site est à jour.", false);
-                }, 5000);
-            } else {
-                dom.offlineModal.classList.add('show');
-                dom.reconnectingModal.classList.remove('show');
-            }
-        }
-        
-        function openCustomizationModal() {
-            dom.customizationModal.classList.add('show');
-        }
-
-        function closeCustomizationModal() {
-            dom.customizationModal.classList.remove('show');
-        }
-        
-        function openPricingModal() {
-            dom.pricingModal.classList.add('show');
-        }
-        function closePricingModal() {
-            dom.pricingModal.classList.remove('show');
-        }
-        
-        function openReportModal() {
-            dom.reportModal.classList.add('show');
-        }
-        function closeReportModal() {
-            dom.reportModal.classList.remove('show');
-            dom.reportForm.reset();
-            dom.reportSubmitButton.innerHTML = "Envoyer le rapport";
-            dom.reportSubmitButton.disabled = false;
-        }
-        
-        async function handleReportSubmit(event) {
-            event.preventDefault();
-            const originalButtonText = dom.reportSubmitButton.innerHTML;
-            dom.reportSubmitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Envoi en cours...`;
-            dom.reportSubmitButton.disabled = true;
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            dom.reportSubmitButton.innerHTML = originalButtonText;
-            dom.reportSubmitButton.disabled = false;
-            closeReportModal();
-            showMessage("Rapport envoyé avec succès. Merci !", false);
-        }
-        
-        function openRobotCheckModal() {
-            dom.robotCheckModal.classList.add('show');
-            dom.robotCheckForm.classList.remove('hidden');
-            dom.robotLoadingAnimation.classList.add('hidden');
-            dom.robotCheckbox.checked = false;
-        }
-        function closeRobotCheckModal() {
-            dom.robotCheckModal.classList.remove('show');
-            dom.robotCheckbox.checked = false;
-        }
-
-        async function handleRobotCheckSubmit(event) {
-            event.preventDefault();
-            if (!dom.robotCheckbox.checked) {
-                showMessage("Veuillez cocher la case de vérification.", true);
-                return;
-            }
-            dom.robotCheckForm.classList.add('hidden');
-            dom.robotLoadingAnimation.classList.remove('hidden');
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            dom.robotLoadingAnimation.classList.add('hidden');
-            localStorage.setItem(LAST_ROBOT_CHECK_KEY, Date.now().toString());
-            closeRobotCheckModal();
-            startStreaming();
-        }
-
-        function getRating() {
-            const storedRating = localStorage.getItem(`shadow-${MOVIE_ID}-rating`);
-            if (storedRating) {
-                const data = JSON.parse(storedRating);
-                if (Date.now() - data.timestamp < RATING_EXPIRATION_MS) {
-                    return data.type;
-                } else {
-                    localStorage.removeItem(`shadow-${MOVIE_ID}-rating`);
-                }
-            }
-            return null;
-        }
-
-        function setRating(ratingType) {
-            const currentRating = getRating();
-            const buttons = [dom.likeButton, dom.dislikeButton];
-            if (currentRating === ratingType) {
-                localStorage.removeItem(`shadow-${MOVIE_ID}-rating`);
-                buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
-                showMessage("Votre vote a été retiré.", false);
-            } else {
-                const data = {
-                    type: ratingType,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem(`shadow-${MOVIE_ID}-rating`, JSON.stringify(data));
-                buttons.forEach(btn => btn.classList.remove('liked', 'disliked'));
-                if (ratingType === 'like') {
-                    dom.likeButton.classList.add('liked');
-                    showMessage("Merci pour votre appréciation !", false);
-                } else {
-                    dom.dislikeButton.classList.add('disliked');
-                    showMessage("Votre avis a été pris en compte.", true);
-                }
-            }
-        }
-        
-        function applyInitialRating() {
-            const rating = getRating();
-            if (rating === 'like') {
-                dom.likeButton.classList.add('liked');
-            } else if (rating === 'dislike') {
-                dom.dislikeButton.classList.add('disliked');
-            }
-        }
-
-        /*
-        OPTIMISATION 6: Utilisation de `requestAnimationFrame` pour les animations qui
-        doivent être synchronisées avec le navigateur (comme le texte qui s'affiche).
-        Cela assure une fluidité maximale et évite les saccades.
-        */
-        function typeWriterEffect(element, text) {
-            element.classList.remove('opacity-0');
-            let index = 0;
-            function animate() {
-                if (index < text.length) {
-                    element.innerHTML += text.charAt(index);
-                    index++;
-                    requestAnimationFrame(animate);
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        function startApp() {
-             try {
-                applySettings();
-                dom.loaderScreen.classList.add('opacity-0');
-                setTimeout(() => {
-                    dom.loaderScreen.style.display = 'none';
-                }, 1500);
-                dom.mainHeader.classList.remove('opacity-0');
-                dom.mainContent.classList.remove('opacity-0');
-                dom.mainFooter.classList.remove('opacity-0');
-                typeWriterEffect(dom.headerSubtitle, subtitleText);
-                checkAuthentication();
-                applyInitialRating();
-                updateOnlineStatus();
-            } catch (e) {
-                console.error("Erreur critique au démarrage de l'application :", e);
-            }
-        }
-        
-        function openDownloadModal() {
-            dom.downloadModal.classList.add('show');
-        }
-        function closeDownloadModal() {
-            dom.downloadModal.classList.remove('show');
-        }
-
-        function openShareModal() {
-            dom.shareModal.classList.add('show');
-            dom.shareLinkInput.value = SHARE_URL;
-        }
-        function closeShareModal() {
-            dom.shareModal.classList.remove('show');
-        }
-
-        function copyToClipboard(text) {
-            const tempInput = document.createElement('textarea');
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showMessage("Lien copié !", false);
-                }
-            } catch (err) {
-                console.error('Erreur lors de la copie du texte', err);
-                showMessage("La copie a échoué. Veuillez copier manuellement.", true);
-            }
-            document.body.removeChild(tempInput);
-        }
-
-        function openVolumeModal() {
-            dom.volumeModal.classList.add('show');
-        }
-        function closeVolumeModal() {
-            dom.volumeModal.classList.remove('show');
-        }
-
-        window.addEventListener('load', () => {
-            startApp();
-            setInterval(checkAuthentication, 60 * 1000);
-        });
-
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-
-        dom.customizationButton.addEventListener('click', openCustomizationModal);
-        dom.getPasswordButton.addEventListener('click', openPricingModal);
-        dom.reportButton.addEventListener('click', openReportModal);
-        dom.reportForm.addEventListener('submit', handleReportSubmit);
-        dom.downloadButton.addEventListener('click', openDownloadModal);
-        dom.shareButton.addEventListener('click', openShareModal);
-        dom.volumeButton.addEventListener('click', openVolumeModal);
-        
-        dom.shareTwitter.addEventListener('click', (e) => {
-            e.preventDefault();
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TITLE)}&url=${encodeURIComponent(SHARE_URL)}`;
-            window.open(twitterUrl, '_blank');
-        });
-
-        dom.shareFacebook.addEventListener('click', (e) => {
-            e.preventDefault();
-            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SHARE_URL)}`;
-            window.open(facebookUrl, '_blank');
-        });
-
-        dom.shareWhatsapp.addEventListener('click', (e) => {
-            e.preventDefault();
-            const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(SHARE_TITLE + ' ' + SHARE_URL)}`;
-            window.open(whatsappUrl, '_blank');
-        });
-
-        dom.shareTelegram.addEventListener('click', (e) => {
-            e.preventDefault();
-            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent(SHARE_TITLE)}`;
-            window.open(telegramUrl, '_blank');
-        });
-
-        dom.copyLinkButton.addEventListener('click', () => {
-            copyToClipboard(dom.shareLinkInput.value);
-        });
-        
-        dom.accentColorPicker.addEventListener('input', (e) => {
-            currentAccentColor = e.target.value;
-            updateDynamicColors();
-            saveSettings();
-        });
-
-        dom.toggleMovieInfo.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                dom.movieInfoContainer.classList.remove('hidden');
-            } else {
-                dom.movieInfoContainer.classList.add('hidden');
-            }
-            saveSettings();
-        });
-        
-        dom.autoTextSizeToggle.addEventListener('change', (e) => {
-            if (e.target.checked) {
-                enableAutoTextSize();
-            } else {
-                disableAutoTextSize();
-            }
-            saveSettings();
-        });
-        dom.decreaseTextBtn.addEventListener('click', () => {
-            if (currentTextSize > 80) {
-                currentTextSize -= 10;
-                document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                dom.textSizeValue.textContent = `${currentTextSize}%`;
-            }
-            saveSettings();
-        });
-        dom.increaseTextBtn.addEventListener('click', () => {
-            if (currentTextSize < 120) {
-                currentTextSize += 10;
-                document.documentElement.style.setProperty('--shadow-text-size', `${(baseFontSize * currentTextSize) / 100}px`);
-                dom.textSizeValue.textContent = `${currentTextSize}%`;
-            }
-            saveSettings();
-        });
-
-        dom.backgroundImageInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64Image = reader.result;
-                    document.body.style.backgroundImage = `url(${base64Image})`;
-                    dom.backgroundPreview.src = base64Image;
-                    dom.backgroundPreviewContainer.classList.remove('hidden');
-                    localStorage.setItem('shadowBackground', base64Image);
-                    saveSettings();
-                    showMessage("Image de fond mise à jour !", false);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        dom.resetBackgroundBtn.addEventListener('click', () => {
-            document.body.style.backgroundImage = `url(${DEFAULT_BACKGROUND_URL})`;
-            localStorage.setItem('shadowBackground', DEFAULT_BACKGROUND_URL);
-            saveSettings();
-            showMessage("Fond d'écran réinitialisé.", false);
-        });
-        
-        dom.likeButton.addEventListener('click', () => setRating('like'));
-        dom.dislikeButton.addEventListener('click', () => setRating('dislike'));
-
-        // Gestion du volume
-        dom.volumeSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            dom.volumeValue.textContent = `${value}%`;
-            dom.volumeFill.style.width = `${value/3}%`;
-            
-            // Le contrôle du volume via JavaScript pour une iframe est limité pour des raisons de sécurité
-            // Un lecteur vidéo standard (ex: HTML <video>) permettrait cela, mais l'iframe ne le permet pas.
-            // On peut cependant simuler l'effet visuellement et expliquer la limitation à l'utilisateur.
-            const volumePercent = value / 100;
-            // Pour un lecteur vidéo dans une iframe, on ne peut pas changer le volume directement.
-            // Il faudrait utiliser l'API du lecteur vidéo s'il en a une.
-            // Cette partie du code est donc conceptuelle et visuelle.
-            console.log(`Volume mis à ${value}%. L'iframe ne supporte pas le changement de volume via le DOM pour des raisons de sécurité.`);
-        });
-
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
-                (e.ctrlKey && e.key.toUpperCase() === 'U')
-            ) {
-                e.preventDefault();
-            }
+                    // Après le chargement du site, on lance le chargement du lecteur pendant 3 secondes
+                    setTimeout(() => {
+                        videoLoadingOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            videoLoadingOverlay.style.display = 'none';
+                        }, 500); // Durée de la transition d'opacité
+                    }, 3000); // Durée du chargement du lecteur
+                }, 1000); // Durée de la transition d'opacité
+            }, 5000); // Durée totale du chargement
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHADOW</title>
+    <title>SHADOW Force</title>
     <!-- Tailwind CSS CDN pour un design fluide -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Police Inter pour un style moderne -->
@@ -23,7 +23,7 @@
             color: var(--text-color);
             overflow: hidden; /* Empêche le défilement du body */
             height: 100vh;
-            background-image: url('https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg');
+            background-image: url('https://placehold.co/1920x1080/0d1117/0d1117');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -402,6 +402,7 @@
             let securityTimer = null;
             const UNLOCK_KEY = "ILDO";
             const UNLOCK_DURATION = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
+            const VIDEO_URL = "https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark";
 
             // --- Logique du chargement initial ---
             const isUnlocked = localStorage.getItem('isUnlocked') === 'true';
@@ -517,8 +518,8 @@
             function showSecurityPopup() {
                 // Arrêter le timer de sécurité
                 clearTimeout(securityTimer);
-                // Arrêter la vidéo
-                videoPlayer.src = videoPlayer.src; // Recharger la source pour arrêter la lecture
+                // Arrêter la vidéo en mettant sa source à vide
+                videoPlayer.src = '';
                 // Cacher la section vidéo
                 videoSection.style.display = 'none';
 
@@ -530,6 +531,8 @@
                 hidePopup(securityPopupContainer);
                 // Ré-afficher la section vidéo
                 videoSection.style.display = 'block';
+                // Relancer la vidéo en restaurant sa source
+                videoPlayer.src = VIDEO_URL;
                 // On relance le timer pour les prochaines 30 secondes
                 securityTimer = setTimeout(() => {
                     showSecurityPopup();

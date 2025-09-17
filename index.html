@@ -365,7 +365,17 @@
                 <div id="video-loading-overlay" class="video-loading-overlay">
                     <div class="video-loading-spinner"></div>
                 </div>
-                <!-- Lecteur vidéo parfaitement fluide avec bords arrondis -->
+
+                <!-- Message d'indisponibilité pour la vidéo -->
+                <div id="video-unavailable-message" class="absolute inset-0 flex flex-col justify-center items-center text-center p-4 bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl text-red-400 font-bold hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-xl">Lecteur vidéo temporairement indisponible.</p>
+                    <p class="text-sm text-gray-400 mt-2">Veuillez revenir plus tard.</p>
+                </div>
+
+                <!-- CODE D'INTÉGRATION DE LA VIDÉO ICI -->
                 <iframe
                     id="video-player"
                     src="https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark"
@@ -401,14 +411,23 @@
             const unlockMessage = document.getElementById('unlock-message');
             const videoPlayer = document.getElementById('video-player');
             const videoSection = document.getElementById('video-section');
+            const videoUnavailableMessage = document.getElementById('video-unavailable-message');
             let securityTimer = null;
             const UNLOCK_KEY = "ILDO";
             const VIDEO_URL = "https://www.viddler.com/#/embed/player?id=4181&playbackId=nzDGwy75s2Z02Mu6MPZpLz00uQix9CpHe00kJ8AFPl4DHg&color=dark";
+            const LAST_KNOWN_VIDEO_URL = 'lastKnownVideoUrl';
+
+            // --- Logique de sécurité renforcée ---
+            const lastStoredUrl = localStorage.getItem(LAST_KNOWN_VIDEO_URL);
+            if (lastStoredUrl !== VIDEO_URL) {
+                // Le film a changé, on réinitialise l'accès
+                localStorage.removeItem('isUnlocked');
+                localStorage.removeItem('hasSeenPopup');
+                localStorage.setItem(LAST_KNOWN_VIDEO_URL, VIDEO_URL);
+            }
 
             // --- Logique du chargement initial ---
-            // On vérifie si l'utilisateur a déjà déverrouillé le site
             const isUnlocked = localStorage.getItem('isUnlocked') === 'true';
-            // On vérifie si l'utilisateur a déjà vu la popup (pour ne pas la redéclencher après 30s)
             const hasSeenPopup = localStorage.getItem('hasSeenPopup') === 'true';
 
             function startSite() {
@@ -516,6 +535,7 @@
                 clearTimeout(securityTimer);
                 videoPlayer.src = '';
                 videoSection.style.display = 'none';
+                videoUnavailableMessage.classList.add('hidden'); // On s'assure que le message d'erreur est caché
 
                 showPopup(securityPopupContainer, '', ''); 
             }
@@ -523,7 +543,15 @@
             function hideSecurityPopup() {
                 hidePopup(securityPopupContainer);
                 videoSection.style.display = 'block';
-                videoPlayer.src = VIDEO_URL;
+
+                // On vérifie si l'URL est vide pour afficher le message d'erreur
+                if (!VIDEO_URL) {
+                    videoUnavailableMessage.classList.remove('hidden');
+                    videoPlayer.src = '';
+                } else {
+                    videoUnavailableMessage.classList.add('hidden');
+                    videoPlayer.src = VIDEO_URL;
+                }
             }
 
             unlockButton.addEventListener('click', () => {
@@ -539,6 +567,7 @@
                         localStorage.setItem('isUnlocked', 'true');
                         // On n'a plus besoin de 'hasSeenPopup'
                         localStorage.removeItem('hasSeenPopup');
+                        localStorage.setItem(LAST_KNOWN_VIDEO_URL, VIDEO_URL);
 
                         hideSecurityPopup();
                         

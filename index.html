@@ -69,6 +69,7 @@
         .popup-container {
             background-color: rgba(0, 0, 0, 0.7); /* Fond sombre pour la popup */
             display: none; /* Cache la popup par défaut */
+            transition: opacity 0.3s ease-in-out;
         }
         
         .popup-container.active {
@@ -247,7 +248,14 @@
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             max-width: 400px;
+            transform: scale(0.8);
+            opacity: 0;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .apple-popup.active {
+            transform: scale(1);
+            opacity: 1;
         }
 
         .apple-popup h2 {
@@ -350,7 +358,8 @@
             const loadingScreen = document.getElementById('loading-screen');
             const mainContent = document.getElementById('main-content');
             const videoLoadingOverlay = document.getElementById('video-loading-overlay');
-            const connectionPopup = document.getElementById('connection-popup');
+            const connectionPopupContainer = document.getElementById('connection-popup');
+            const applePopup = connectionPopupContainer.querySelector('.apple-popup');
             const popupTitle = document.getElementById('popup-title');
             const popupMessage = document.getElementById('popup-message');
             const popupSpinner = document.getElementById('popup-spinner');
@@ -375,6 +384,14 @@
 
             // --- Gestion de la connexion ---
             function showConnectionPopup(title, message, showSpinner = false) {
+                // Rendre le conteneur visible avant d'appliquer les animations
+                connectionPopupContainer.style.display = 'flex';
+                // Petit délai pour permettre au navigateur de rendre l'élément avant de lancer la transition
+                setTimeout(() => {
+                    connectionPopupContainer.classList.add('active');
+                    applePopup.classList.add('active');
+                }, 10);
+
                 popupTitle.textContent = title;
                 popupMessage.textContent = message;
                 if (showSpinner) {
@@ -382,12 +399,16 @@
                 } else {
                     popupSpinner.classList.add('hidden');
                 }
-                connectionPopup.classList.add('active');
             }
 
             function hideConnectionPopup(delay = 0) {
                 setTimeout(() => {
-                    connectionPopup.classList.remove('active');
+                    applePopup.classList.remove('active');
+                    connectionPopupContainer.classList.remove('active');
+                    // Cacher le conteneur après la transition
+                    setTimeout(() => {
+                        connectionPopupContainer.style.display = 'none';
+                    }, 300); // Correspond à la durée de la transition CSS
                 }, delay);
             }
 

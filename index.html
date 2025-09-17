@@ -24,7 +24,7 @@
             overflow-x: hidden;
             /* Ajoutez l'URL de votre image ici pour l'arrière-plan du film */
             /* Exemple: url('https://votre-image-de-film.com/affiche.jpg') */
-            background-image: url('https://placehold.co/1920x1080/0d1117/0d1117');
+            background-image: url('https://media.themoviedb.org/t/p/original/7feqUkd4nImNJrDadxKmD3NtLHh.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -193,6 +193,15 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Style pour un footer toujours en bas de la page */
+        .fixed-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-[#0d1117] text-gray-300 font-inter">
@@ -218,7 +227,7 @@
         </header>
 
         <!-- Contenu principal -->
-        <main class="container mx-auto p-4 md:p-8 space-y-8">
+        <main class="container mx-auto p-4 md:p-8 space-y-8 pb-12">
             <section class="mt-12 text-center">
                 <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-2">Shadow Force</h1>
                 <p class="text-lg md:text-xl text-gray-400">Date de sortie: 2025</p>
@@ -245,8 +254,8 @@
             </section>
         </main>
 
-        <!-- Footer avec signature animée -->
-        <footer class="py-4 mt-12 text-center text-gray-500 text-sm">
+        <!-- Footer avec signature animée fixée en bas -->
+        <footer class="py-4 text-center text-gray-500 text-sm fixed-footer">
             <p class="footer-signature">Powered by SHadow</p>
         </footer>
     </div>
